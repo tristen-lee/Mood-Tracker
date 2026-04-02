@@ -1,5 +1,6 @@
 from storage.data_manager import add_entry, load_data
 from datetime import datetime
+import csv 
 
 def view_by_date_range():
     data = load_data()
@@ -126,8 +127,9 @@ def main_menu():
         print("2. View Data")
         print("3. Show Average Mood")
         print("4. View by Date Range")
-        print("5. Streak Tracking")
-        print("6. Exit")
+        print("5. Streaks!")
+        print("6. Download Your Progress")
+        print("7. Exit")
 
         choice = input("Select an option: ")
 
@@ -142,6 +144,8 @@ def main_menu():
         elif choice == "5":
             streak_tracking()
         elif choice == "6":
+            data_export()
+        elif choice == "7":
             break
 
 def average_mood():
@@ -202,6 +206,17 @@ def streak_tracking():
             streak = 1
 
     print(f"Your current logging streak is {streak} day(s).")
+
+def data_export():
+    data = load_data()
+    with open('mood_data.csv', "w", newline="") as f:
+        mood_writer = csv.DictWriter(f, fieldnames = ["timestamp", 
+            "sleep", "mood_score", "mania", "psychosis", "depression", 
+            "suicidal_thoughts", "notes"])
+        mood_writer.writeheader()
+        for entry in data:
+            mood_writer.writerow(entry)
+
 
 if __name__ == "__main__":
     main_menu()
