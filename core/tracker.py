@@ -12,8 +12,20 @@ def yes_no_to_bool(question):
             print("Invalid response. Please type yes or no.")
 
 def log_daily_entry():
-    sleep_hours = int(input("How many hours did you sleep? Please use a numeric value."))
-    mood_value = int(input("How is your mood today, from a score of 1-10?"))
+    while True:
+        try:
+            sleep_hours = int(input("How many hours did you sleep? Please use a numeric value. "))
+            break
+        except ValueError:
+            print("Please enter a whole number.")
+    while True:
+        try:
+            mood_value = int(input("How is your mood today, from a score of 1-10? "))
+            if 1 <= mood_value <= 10:
+                break
+            print("Please enter a number between 1 and 10.")
+        except ValueError:
+            print("Please enter a whole number.")
     mania_value = yes_no_to_bool("Are you experiencing mania?")
     psychosis_value = yes_no_to_bool("If so, do you feel symptoms of psychosis?")
     depression_value = yes_no_to_bool("Are you experiencing depression today?")
@@ -97,12 +109,12 @@ def average_mood():
 
     response = input("Would you like some practical tips based on your recent trends? (yes/no): ").strip().lower()
 
-    if response in ["yes", "y"] and avg :
+    if response in ["yes", "y"]:
         print("Tip: Track sleep consistently, write down triggers, and review patterns weekly.")
     elif response in ["no", "n"]:
         print("Alright. Staying aware is already progress.")
     else:
         print("Invalid response — skipping tips.")
 
-main_menu()
-log_daily_entry()
+if __name__ == "__main__":
+    main_menu()
