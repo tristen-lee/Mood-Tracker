@@ -1,1 +1,5 @@
-matplotlib
+ Hey there!
+ 
+ You will need matplotlib -- https://matplotlib.org/ --
+
+ Thanks for checking this out :)

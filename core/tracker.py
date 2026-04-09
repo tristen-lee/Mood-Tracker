@@ -181,14 +181,90 @@ def analytics_menu():
         elif choice == "9":
             break
 
+def delete_entry():
+    data = load_data()
+    if not data:
+        print("No entries found.")
+        return
+
+    for index, entry in enumerate(data, start=1):
+        date = datetime.fromisoformat(entry["timestamp"]).strftime("%B %d, %Y")
+        print(f"{index}. {date} — Mood: {entry['mood_score']}, Energy: {entry['energy_level']}")
+
+    date_input = input("\nWhich day would you like to delete? (e.g. April 03, 2026 — or press Enter to cancel) ").strip()
+    if not date_input:
+        return
+
+    for i, entry in enumerate(data):
+        entry_date = datetime.fromisoformat(entry["timestamp"]).strftime("%B %d, %Y")
+        if entry_date == date_input:
+            data.pop(i)
+            from storage.data_manager import save_data
+            save_data(data)
+            print(f"Entry from {date_input} deleted.")
+            return
+
+    print("No entry found for that date.")
+
+def edit_entry():
+    data = load_data()
+    if not data:
+        print("No entries found.")
+        return
+
+    for index, entry in enumerate(data, start=1):
+        date = datetime.fromisoformat(entry["timestamp"]).strftime("%B %d, %Y")
+        print(f"{index}. {date} — Mood: {entry['mood_score']}, Energy: {entry['energy_level']}")
+
+    date_input = input("\nWhich day would you like to edit? (e.g. April 03, 2026 — or press Enter to cancel) ").strip()
+    if not date_input:
+        return
+
+    entry = None
+    for e in data:
+        if datetime.fromisoformat(e["timestamp"]).strftime("%B %d, %Y") == date_input:
+            entry = e
+            break
+
+    if not entry:
+        print("No entry found for that date.")
+        return
+
+    print(f"\nEditing {date_input}. Press Enter to keep the current value.\n")
+
+    for field in ["sleep", "mood_score", "energy_level"]:
+        new_val = input(f"{field} (current: {entry[field]}): ").strip()
+        if new_val:
+            try:
+                entry[field] = int(new_val)
+            except ValueError:
+                print(f"Invalid value, keeping {entry[field]}.")
+
+    for field in ["mania", "psychosis", "depression", "intrusive_thoughts", "racing_thoughts", "irritability", "social_withdrawal"]:
+        new_val = input(f"{field} (current: {entry[field]}, yes/no): ").strip().lower()
+        if new_val in ["yes", "y"]:
+            entry[field] = True
+        elif new_val in ["no", "n"]:
+            entry[field] = False
+
+    new_notes = input(f"notes (current: '{entry['notes']}'): ").strip()
+    if new_notes:
+        entry["notes"] = new_notes
+
+    from storage.data_manager import save_data
+    save_data(data)
+    print("Entry updated.")
+
 def main_menu():
     while True:
         print("\n-- Mood Tracker --")
         print("1. Log Entry")
         print("2. View Data")
         print("3. Analytics")
-        print("4. Download Your Progress")
-        print("5. Exit")
+        print("4. Edit an Entry")
+        print("5. Delete an Entry")
+        print("6. Download Your Progress")
+        print("7. Exit")
 
         choice = input("Select an option: ")
 
@@ -199,8 +275,12 @@ def main_menu():
         elif choice == "3":
             analytics_menu()
         elif choice == "4":
-            data_export()
+            edit_entry()
         elif choice == "5":
+            delete_entry()
+        elif choice == "6":
+            data_export()
+        elif choice == "7":
             break
 
 def average_mood():
@@ -222,6 +302,7 @@ def average_mood():
 
     if avg <= 4:
         print("It seems like you may be in a very dark place. Please reach out to someone you trust.")
+        print("Crisis line: call or text 988 (Suicide & Crisis Lifeline) — available 24/7.")
     elif 5 <= avg <= 9:
         print("It looks like you have been experiencing depression. Make sure to take time for self-care.")
     elif 10 <= avg <= 15:
@@ -234,6 +315,7 @@ def average_mood():
     last_entry = data[-1]
     if last_entry["racing_thoughts"] and last_entry["depression"]:
         print("\n⚠ Mixed state detected in your last entry — this is a high risk pattern. Please reach out to someone you trust.")
+        print("Crisis line: call or text 988 (Suicide & Crisis Lifeline) — available 24/7.")
 
     response = input("\nWould you like some practical tips based on your recent trends? (yes/no): ").strip().lower()
 
