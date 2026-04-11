@@ -1,5 +1,8 @@
  Hey there!
- 
- You will need matplotlib -- https://matplotlib.org/ --
+
+ You will need to install the following dependencies:
+ matplotlib -- https://matplotlib.org/
+ fastapi -- https://fastapi.tiangolo.com/
+ uvicorn -- https://www.uvicorn.org/
 
  Thanks for checking this out :)
