@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log Entry — Mood Tracker</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
 </head>
 <body>
     <nav>
-        <a href="home.html">Home</a>
+        <a href="dashboard.html">Home</a>
         <a href="log.html">Check In</a>
         <a href="entries.html">My Entries</a>
         <a href="analytics.html">Analytics</a>
@@ -38,8 +41,9 @@
     <label>Want to take notes on the day?</label>
     <textarea name="notes" rows="3"></textarea>
     <button type="submit">All Done!</button>
+    <div id="form-message"></div>
 </form>
 
-    <script src="app.js"></script>
+    <script src="log.js"></script>
 </body>
 </html>

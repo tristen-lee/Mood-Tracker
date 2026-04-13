@@ -1,10 +1,18 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from datetime import datetime
 from storage.data_manager import load_data, add_entry, save_data
 from core.tracker import combined_score, mood_state
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # --- Models ---
@@ -114,3 +122,43 @@ def get_by_date(days: int = 7):
         if datetime.fromisoformat(e["timestamp"]).date() >= cutoff
     ]
     return filtered
+
+@app.get("/analytics/by-day")
+def get_by_day():
+    from collections import defaultdict
+    data = load_data()
+    if not data:
+        return []
+    day_scores = defaultdict(list)
+    for entry in data:
+        day = datetime.fromisoformat(entry["timestamp"]).strftime("%A")
+        day_scores[day].append(combined_score(entry))
+    order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    return [
+        {"day": day, "average": round(sum(day_scores[day]) / len(day_scores[day]), 2)}
+        for day in order if day in day_scores
+    ]
+
+@app.get("/analytics/mood-distribution")
+def get_mood_distribution():
+    from collections import Counter
+    data = load_data()
+    if not data:
+        return []
+    states = [mood_state(combined_score(e)) for e in data]
+    counts = Counter(states)
+    return [{"state": state, "count": count} for state, count in counts.items()]
+
+@app.get("/analytics/sleep-vs-mood")
+def get_sleep_vs_mood():
+    data = load_data()
+    if not data:
+        return []
+    return [{"sleep": e["sleep"], "score": combined_score(e)} for e in data]
+
+@app.get("/analytics/sleep-over-time")
+def get_sleep_over_time():
+    data = load_data()
+    if not data:
+        return []
+    return [{"timestamp": e["timestamp"], "sleep": e["sleep"]} for e in data]

@@ -1,5 +1,246 @@
-#woman_meditating{
-    height: 500px;
+:root {
+    --background: #31373E;
+    --text: #F5F0F0;
+    --heading: #E16F7C;
+    --accent: #87BBA2;
+}
+
+/* === Reset === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* === Fade up animation === */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* === Body === */
+body {
+    font-family: "Quicksand", sans-serif;
+    background-color: var(--background);
+    color: var(--text);
+    padding: 1.5rem 2rem;
+}
+
+/* === Nav === */
+nav {
+    display: flex;
+    gap: 1.5rem;
+    padding: 0 0 1.5rem 0;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--text);
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+/* === Headings === */
+h1, h2 {
+    font-family: "Montserrat Alternates", sans-serif;
+    font-weight: 500;
+    color: var(--heading);
+    animation: fadeUp 0.5s ease forwards;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+}
+
+#centered {
+    text-align: center;
+}
+
+/* === Dashboard centered layout === */
+.centered-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-height: 100vh;
+}
+
+/* === Image === */
+#woman_meditating {
     width: 500px;
+    height: 500px;
     object-fit: contain;
+}
+
+/* === Form === */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 480px;
+    margin: 1.5rem auto;
+    background-color: #3d444c;
+    padding: 2rem;
+    border-radius: 1rem;
+}
+
+input[type="number"] {
+    padding: 0.6rem 0.75rem;
+    font-size: 1rem;
+    background-color: var(--background);
+    color: var(--text);
+    border: 1px solid #555;
+    border-radius: 0.5rem;
+    font-family: "Quicksand", sans-serif;
+}
+
+textarea {
+    padding: 0.6rem 0.75rem;
+    font-size: 1rem;
+    resize: vertical;
+    background-color: var(--background);
+    color: var(--text);
+    border: 1px solid #555;
+    border-radius: 0.5rem;
+    font-family: "Quicksand", sans-serif;
+}
+
+button[type="submit"] {
+    padding: 0.75rem;
+    font-size: 1rem;
+    cursor: pointer;
+    background-color: var(--heading);
+    color: #fff;
+    border: none;
+    border-radius: 0.5rem;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+button[type="submit"]:hover {
+    opacity: 0.88;
+}
+
+label {
+    font-size: 0.95rem;
+    color: var(--text);
+}
+
+/* === Checkboxes (style into toggles later) === */
+input[type="checkbox"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+}
+
+/* === Footer === */
+footer {
+    padding: 2rem 0 0.5rem 0;
+    font-size: 0.75rem;
+    color: var(--accent);
+}
+
+footer a {
+    color: var(--accent);
+}
+
+/* === Form messages === */
+#form-message {
+    margin-top: 0.75rem;
+    font-size: 0.95rem;
+    min-height: 1.2rem;
+}
+
+#form-message.success {
+    color: var(--accent);
+}
+
+#form-message.error {
+    color: var(--heading);
+}
+
+/* === Entry cards === */
+#entries-list {
+    max-width: 700px;
+    margin: 1.5rem auto;
+}
+
+.entry-card {
+    background-color: #3d444c;
+    border-radius: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.entry-flags {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--heading);
+}
+
+.entry-notes {
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: #b0b8b0;
+}
+
+/* === Analytics stat cards (3-column row) === */
+.analytics-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.analytics-card {
+    background-color: #3d444c;
+    border-radius: 0.75rem;
+    padding: 1.25rem 1.5rem;
+}
+
+.big-stat {
+    font-size: 1.75rem;
+    font-family: "Montserrat Alternates", sans-serif;
+    font-weight: 500;
+    color: var(--heading);
+    margin-top: 0.25rem;
+}
+
+.sub-stat {
+    font-size: 0.9rem;
+    color: var(--accent);
+    margin-top: 0.25rem;
+}
+
+/* === Charts === */
+#chart {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+    max-width: 900px;
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 360px;
+    background-color: #3d444c;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
 }
