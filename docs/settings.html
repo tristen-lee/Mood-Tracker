@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analytics — Mood Tracker</title>
+    <title>Settings — Cairn</title>
     <link rel="stylesheet" href="style.css">
     <script src="theme.js"></script>
     <link rel="manifest" href="manifest.json">
@@ -22,19 +22,21 @@
         <a href="analytics.html" class="nav-link">Analytics</a>
     </nav>
 
-    <h1>How Have You Been?</h1>
+    <h1>Settings</h1>
 
-    <div class="analytics-stats">
-        <div id="mood-state"></div>
-        <div id="average-score"></div>
-        <div id="streak"></div>
+    <div class="settings-card">
+        <h2>Theme</h2>
+        <div class="theme-toggle">
+            <button class="theme-btn" data-value="dark">Dark</button>
+            <button class="theme-btn" data-value="system">System</button>
+            <button class="theme-btn" data-value="light">Light</button>
+        </div>
     </div>
-    <div id="chart"></div>
 
     <footer>
         <a href="terms.html">Terms</a><span> · </span><a href="attributions.html">Attributions</a><span> · </span><a href="settings.html">Settings</a>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="analytics.js"></script>
+
+    <script src="settings.js"></script>
 </body>
 </html>
