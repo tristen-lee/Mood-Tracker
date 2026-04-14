@@ -130,6 +130,31 @@ def create_entry(entry: Entry, authorization: Optional[str] = Header(None)):
     score = combined_score(entry.model_dump())
     return {"message": "Entry logged successfully", "score": score, "mood_state": mood_state(score)}
 
+@app.patch("/entries")
+def update_entry(date: str, entry: Entry, authorization: Optional[str] = Header(None)):
+    user_id = get_user_id(authorization)
+    try:
+        converted = datetime.strptime(date, "%m/%d/%Y").strftime("%Y-%m-%d")
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Use MM/DD/YYYY format.")
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        UPDATE entries SET mood_score=%s, sleep=%s, energy_level=%s, mania=%s, psychosis=%s,
+            depression=%s, intrusive_thoughts=%s, racing_thoughts=%s, irritability=%s,
+            social_withdrawal=%s, notes=%s
+        WHERE user_id=%s AND timestamp::date=%s
+    """, (entry.mood_score, entry.sleep, entry.energy_level, entry.mania, entry.psychosis,
+          entry.depression, entry.intrusive_thoughts, entry.racing_thoughts, entry.irritability,
+          entry.social_withdrawal, entry.notes, user_id, converted))
+    if cur.rowcount == 0:
+        conn.close()
+        raise HTTPException(status_code=404, detail="No entry found for that date.")
+    conn.commit()
+    conn.close()
+    score = combined_score(entry.model_dump())
+    return {"message": "Entry updated.", "score": score, "mood_state": mood_state(score)}
+
 @app.delete("/entries")
 def delete_entry(date: str, authorization: Optional[str] = Header(None)):
     user_id = get_user_id(authorization)

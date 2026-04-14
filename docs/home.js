@@ -55,7 +55,7 @@ document.getElementById("register-form").addEventListener("submit", async functi
         if (res.ok) {
             localStorage.setItem("token", data.token);
             localStorage.setItem("name", data.name);
-            window.location.href = "dashboard.html";
+            window.location.href = "onboarding.html";
         } else {
             msg.textContent = data.detail;
             msg.style.color = "var(--heading)";

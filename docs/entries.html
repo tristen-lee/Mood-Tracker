@@ -28,8 +28,41 @@
         <!-- entries  -->
     </div>
 
+    <div id="edit-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h2>Edit Entry</h2>
+            <form id="edit-form">
+                <div class="slider-row">
+                    <label>Mood Score <span class="slider-val" id="edit-mood-val">5</span></label>
+                    <input type="range" id="edit-mood" name="mood_score" min="1" max="10" value="5" oninput="document.getElementById('edit-mood-val').textContent=this.value">
+                </div>
+                <div class="slider-row">
+                    <label>Hours of Sleep <span class="slider-val" id="edit-sleep-val">7</span></label>
+                    <input type="range" id="edit-sleep" name="sleep" min="0" max="24" value="7" oninput="document.getElementById('edit-sleep-val').textContent=this.value">
+                </div>
+                <div class="slider-row">
+                    <label>Energy Level <span class="slider-val" id="edit-energy-val">5</span></label>
+                    <input type="range" id="edit-energy" name="energy_level" min="0" max="10" value="5" oninput="document.getElementById('edit-energy-val').textContent=this.value">
+                </div>
+                <div class="checkbox-row"><label>Feeling extra elevated?</label><input type="checkbox" id="edit-mania"></div>
+                <div class="checkbox-row"><label>Feeling disconnected from reality?</label><input type="checkbox" id="edit-psychosis"></div>
+                <div class="checkbox-row"><label>Feeling low or empty inside?</label><input type="checkbox" id="edit-depression"></div>
+                <div class="checkbox-row"><label>Is your mind going to dark places?</label><input type="checkbox" id="edit-intrusive"></div>
+                <div class="checkbox-row"><label>Thoughts moving too fast to catch?</label><input type="checkbox" id="edit-racing"></div>
+                <div class="checkbox-row"><label>Feeling more irritable than usual?</label><input type="checkbox" id="edit-irritability"></div>
+                <div class="checkbox-row"><label>Pulling away from people today?</label><input type="checkbox" id="edit-withdrawal"></div>
+                <label>Notes</label>
+                <textarea id="edit-notes" rows="3"></textarea>
+                <div class="modal-actions">
+                    <button type="submit">Save</button>
+                    <button type="button" onclick="closeEdit()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <footer>
-        <a href="terms.html">Terms</a><span> · </span><a href="attributions.html">Attributions</a><span> · </span><a href="settings.html">Settings</a>
+        <a href="terms.html">Terms</a><span> · </span><a href="attributions.html">Attributions</a><span> · </span><a href="settings.html">Settings</a><span> · </span><a href="help.html">Help</a>
     </footer>
     <script src="entries.js"></script>
 </body>
