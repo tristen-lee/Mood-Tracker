@@ -221,7 +221,7 @@ footer a {
 /* === Analytics stat cards (3-column row) === */
 .analytics-stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 1rem;
     margin-bottom: 2rem;
 }
@@ -352,7 +352,7 @@ footer a {
 /* === Feature cards === */
 .features {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 1.25rem;
     padding: 0 2rem 4rem;
     max-width: 900px;
