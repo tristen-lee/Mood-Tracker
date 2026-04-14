@@ -929,7 +929,8 @@ footer span {
     line-height: 1.5;
 }
 
-.onboarding-btn {
+.onboarding-btn,
+.onboarding-section a.onboarding-btn {
     display: inline-block;
     margin-top: 1rem;
     padding: 0.85rem 2rem;
@@ -945,6 +946,7 @@ footer span {
 
 .onboarding-btn:hover {
     opacity: 0.88;
+    text-decoration: none;
 }
 
 /* === Settings === */
