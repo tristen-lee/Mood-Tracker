@@ -6,7 +6,7 @@ from collections import defaultdict, Counter
 from typing import Optional
 from db.database import get_connection
 from db.auth import hash_password, verify_password, create_token, decode_token
-from core.tracker import combined_score, mood_state
+from core.scoring import combined_score, mood_state
 
 app = FastAPI()
 
