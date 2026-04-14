@@ -45,6 +45,10 @@ class Entry(BaseModel):
     irritability: bool
     social_withdrawal: bool
     notes: str
+    medications_taken: Optional[list] = []
+
+class MedicationBody(BaseModel):
+    name: str
 
 
 # --- Auth helper ---
@@ -93,6 +97,43 @@ def login(body: LoginBody):
     return {"token": token, "name": row[1]}
 
 
+# --- Medication Endpoints ---
+
+@app.get("/medications")
+def get_medications(authorization: Optional[str] = Header(None)):
+    user_id = get_user_id(authorization)
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id, name FROM medications WHERE user_id = %s ORDER BY id ASC", (user_id,))
+    rows = cur.fetchall()
+    conn.close()
+    return [{"id": r[0], "name": r[1]} for r in rows]
+
+@app.post("/medications")
+def add_medication(body: MedicationBody, authorization: Optional[str] = Header(None)):
+    user_id = get_user_id(authorization)
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("INSERT INTO medications (user_id, name) VALUES (%s, %s) RETURNING id", (user_id, body.name.strip()))
+    med_id = cur.fetchone()[0]
+    conn.commit()
+    conn.close()
+    return {"id": med_id, "name": body.name.strip()}
+
+@app.delete("/medications/{med_id}")
+def delete_medication(med_id: int, authorization: Optional[str] = Header(None)):
+    user_id = get_user_id(authorization)
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM medications WHERE id = %s AND user_id = %s", (med_id, user_id))
+    if cur.rowcount == 0:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Medication not found.")
+    conn.commit()
+    conn.close()
+    return {"message": "Deleted."}
+
+
 # --- Entry Endpoints ---
 
 @app.get("/entries")
@@ -107,11 +148,23 @@ def get_entries(authorization: Optional[str] = Header(None)):
         FROM entries WHERE user_id = %s ORDER BY timestamp ASC
     """, (user_id,))
     rows = cur.fetchall()
-    conn.close()
     cols = ["mood_score", "sleep", "energy_level", "mania", "psychosis", "depression",
             "intrusive_thoughts", "racing_thoughts", "irritability", "social_withdrawal",
             "notes", "timestamp"]
-    return [dict(zip(cols, row)) for row in rows]
+    entries = [dict(zip(cols, row)) for row in rows]
+    cur.execute("""
+        SELECT em.date, m.name FROM entry_medications em
+        JOIN medications m ON em.medication_id = m.id
+        WHERE em.user_id = %s
+    """, (user_id,))
+    med_rows = cur.fetchall()
+    conn.close()
+    med_map = defaultdict(list)
+    for date, name in med_rows:
+        med_map[date].append(name)
+    for e in entries:
+        e["medications_taken"] = med_map.get(e["timestamp"].date(), [])
+    return entries
 
 @app.post("/entries")
 def create_entry(entry: Entry, authorization: Optional[str] = Header(None)):
@@ -125,6 +178,13 @@ def create_entry(entry: Entry, authorization: Optional[str] = Header(None)):
     """, (user_id, entry.mood_score, entry.sleep, entry.energy_level, entry.mania,
           entry.psychosis, entry.depression, entry.intrusive_thoughts, entry.racing_thoughts,
           entry.irritability, entry.social_withdrawal, entry.notes))
+    entry_date = datetime.now().date()
+    if entry.medications_taken:
+        for med_id in entry.medications_taken:
+            cur.execute(
+                "INSERT INTO entry_medications (user_id, date, medication_id) VALUES (%s, %s, %s)",
+                (user_id, entry_date, med_id)
+            )
     conn.commit()
     conn.close()
     score = combined_score(entry.model_dump())
@@ -164,6 +224,10 @@ def delete_entry(date: str, authorization: Optional[str] = Header(None)):
         raise HTTPException(status_code=400, detail="Use MM/DD/YYYY format.")
     conn = get_connection()
     cur = conn.cursor()
+    cur.execute(
+        "DELETE FROM entry_medications WHERE user_id = %s AND date = %s",
+        (user_id, converted)
+    )
     cur.execute(
         "DELETE FROM entries WHERE user_id = %s AND timestamp::date = %s",
         (user_id, converted)

@@ -1,3 +1,5 @@
+const API = "https://mood-tracker-11bv.onrender.com";
+
 const successMessages = [
     "You showed up today. That matters.",
     "Entry logged. You're doing the work.",
@@ -27,10 +29,33 @@ function showError(text) {
     setTimeout(() => { msg.textContent = ""; msg.className = ""; }, 3000);
 }
 
+async function loadMeds() {
+    try {
+        const res = await fetch(`${API}/medications`, {
+            headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
+        });
+        const meds = await res.json();
+        const container = document.getElementById("med-checkboxes");
+        if (!meds.length) return;
+        container.innerHTML = `
+            <p class="med-section-label">Medications taken today</p>
+            ${meds.map(m => `
+                <div class="checkbox-row">
+                    <label>${m.name}</label>
+                    <input type="checkbox" class="med-checkbox" data-id="${m.id}">
+                </div>
+            `).join("")}
+        `;
+    } catch {}
+}
+
+loadMeds();
+
 document.getElementById("log-form").addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const form = e.target;
+    const medIds = [...document.querySelectorAll(".med-checkbox:checked")].map(el => parseInt(el.dataset.id));
 
     const entry = {
         mood_score: parseInt(form.mood_score.value),
@@ -44,10 +69,11 @@ document.getElementById("log-form").addEventListener("submit", async function (e
         irritability: form.irritability.checked,
         social_withdrawal: form.social_withdrawal.checked,
         notes: form.notes.value,
+        medications_taken: medIds,
     };
 
     try {
-        const response = await fetch("https://mood-tracker-11bv.onrender.com/entries", {
+        const response = await fetch(`${API}/entries`, {
             method: "POST",
             headers: { "Content-Type": "application/json", "Authorization": "Bearer " + localStorage.getItem("token") },
             body: JSON.stringify(entry),
@@ -57,6 +83,7 @@ document.getElementById("log-form").addEventListener("submit", async function (e
             const data = await response.json();
             showSuccess(data.mood_state);
             form.reset();
+            loadMeds();
         } else {
             const err = await response.json();
             showError("Something went wrong: " + err.detail);

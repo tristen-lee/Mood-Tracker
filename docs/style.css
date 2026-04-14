@@ -1026,6 +1026,38 @@ footer span {
     opacity: 0.88;
 }
 
+.med-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--divider);
+    font-size: 0.95rem;
+}
+
+.med-delete {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--heading);
+    padding: 0.25rem 0.6rem;
+    border-radius: 0.4rem;
+    font-family: "Quicksand", sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.med-delete:hover {
+    background: var(--heading);
+    color: #fff;
+}
+
+.med-section-label {
+    font-size: 0.85rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
 .settings-hint {
     font-size: 0.85rem;
     color: var(--accent);
