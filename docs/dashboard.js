@@ -51,6 +51,26 @@ fetch("https://mood-tracker-11bv.onrender.com/analytics/episode-risk", {
 })
 .catch(() => {});
 
+if (!localStorage.getItem("medNudgeDismissed")) {
+    fetch("https://mood-tracker-11bv.onrender.com/medications", {
+        headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
+    })
+    .then(r => r.json())
+    .then(meds => {
+        if (meds.length > 0) {
+            localStorage.setItem("medNudgeDismissed", "true");
+            return;
+        }
+        const el = document.getElementById("episode-warning");
+        el.innerHTML = `
+            <div class="warning-card nudge-card">
+                <span>New: add your medications in <a href="settings.html">Settings</a> to track them with each check-in.</span>
+                <button onclick="this.closest('.warning-card').remove(); localStorage.setItem('medNudgeDismissed','true')" class="nudge-dismiss">✕</button>
+            </div>`;
+    })
+    .catch(() => {});
+}
+
 if (localStorage.getItem("hasVisited")) {
     document.getElementById("greeting").innerHTML = randomGreeting[randNum];
 } else {
