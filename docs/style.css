@@ -31,6 +31,7 @@ body {
     background-color: var(--background);
     color: var(--text);
     padding: 1.5rem 2rem;
+    overflow-x: hidden;
 }
 
 /* === Nav === */
@@ -271,10 +272,12 @@ footer a {
 
 .hero {
     display: flex;
-    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
     justify-content: center;
-    padding: 5rem 2rem 4rem;
-    text-align: center;
+    gap: 3rem;
+    padding: 4rem 2rem 3rem;
 }
 
 .hero-text {
@@ -385,14 +388,6 @@ footer a {
 }
 
 /* === Auth box === */
-.hero {
-    flex-direction: row;
-    gap: 4rem;
-    justify-content: center;
-    align-items: flex-start;
-    flex-wrap: wrap;
-}
-
 .hero-left {
     max-width: 480px;
     text-align: left;
@@ -548,7 +543,7 @@ footer a {
 }
 
 /* === Mobile === */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
     body {
         padding: 1.25rem 1rem;
     }
