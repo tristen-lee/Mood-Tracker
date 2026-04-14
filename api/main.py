@@ -127,7 +127,8 @@ def create_entry(entry: Entry, authorization: Optional[str] = Header(None)):
           entry.irritability, entry.social_withdrawal, entry.notes))
     conn.commit()
     conn.close()
-    return {"message": "Entry logged successfully"}
+    score = combined_score(entry.model_dump())
+    return {"message": "Entry logged successfully", "score": score, "mood_state": mood_state(score)}
 
 @app.delete("/entries")
 def delete_entry(date: str, authorization: Optional[str] = Header(None)):
@@ -245,3 +246,62 @@ def get_sleep_over_time(authorization: Optional[str] = Header(None)):
     user_id = get_user_id(authorization)
     data = fetch_entries(user_id)
     return [{"timestamp": e["timestamp"].isoformat(), "sleep": e["sleep"]} for e in data]
+
+@app.get("/analytics/episode-risk")
+def get_episode_risk(authorization: Optional[str] = Header(None)):
+    user_id = get_user_id(authorization)
+    data = fetch_entries(user_id)
+    if len(data) < 7:
+        return {"risk": "none", "message": "", "triggers": []}
+
+    recent = data[-7:]
+    scores = [combined_score(e) for e in recent]
+    last = recent[-1]
+    triggers = []
+
+    # Mixed state — highest priority
+    if last["racing_thoughts"] and last["depression"]:
+        return {
+            "risk": "mixed",
+            "message": "Your last entry shows signs of a mixed state — racing thoughts alongside depression. This is a high-risk pattern. Please reach out to someone you trust.",
+            "triggers": ["mixed state detected"]
+        }
+
+    # Check for consecutive low sleep
+    sleep_values = [e["sleep"] for e in recent[-3:]]
+    if all(s <= 5 for s in sleep_values):
+        triggers.append("sleep under 5 hours for 3+ days")
+
+    # Score trend over last 5 entries
+    if len(scores) >= 5:
+        trend = scores[-1] - scores[-5]
+    else:
+        trend = scores[-1] - scores[0]
+
+    # Mania risk
+    manic_flags = sum(1 for e in recent[-5:] if e["mania"] or e["racing_thoughts"])
+    if trend >= 4 or (triggers and scores[-1] >= 16) or manic_flags >= 3:
+        if trend >= 4:
+            triggers.append("mood score rising")
+        if manic_flags >= 3:
+            triggers.append("elevated symptoms in recent entries")
+        return {
+            "risk": "mania",
+            "message": "Your recent entries suggest an elevated episode may be approaching. Keep an eye on your sleep and reach out to your care team if things escalate.",
+            "triggers": triggers
+        }
+
+    # Depression risk
+    depressive_flags = sum(1 for e in recent[-5:] if e["depression"] or e["social_withdrawal"])
+    if trend <= -4 or depressive_flags >= 3:
+        if trend <= -4:
+            triggers.append("mood score declining")
+        if depressive_flags >= 3:
+            triggers.append("depressive symptoms in recent entries")
+        return {
+            "risk": "depression",
+            "message": "Your recent entries suggest a depressive episode may be approaching. Be gentle with yourself and consider reaching out to someone you trust.",
+            "triggers": triggers
+        }
+
+    return {"risk": "none", "message": "", "triggers": []}

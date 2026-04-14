@@ -12,6 +12,13 @@ def combined_score(entry):
         score += 2
     if entry["irritability"]:
         score += 1
+    if entry["psychosis"]:
+        if entry["mania"] or entry["racing_thoughts"]:
+            score += 3
+        elif entry["depression"] or entry["social_withdrawal"]:
+            score -= 3
+        else:
+            score -= 1
     if entry["sleep"] <= 5:
         score += 2
     if entry["sleep"] <= 3:
@@ -21,7 +28,7 @@ def combined_score(entry):
 
 def mood_state(score):
     if score <= 4:
-        return "Suicidal"
+        return "Crisis"
     elif score <= 9:
         return "Depressed"
     elif score <= 15:

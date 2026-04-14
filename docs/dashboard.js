@@ -39,6 +39,18 @@ const images = [
 const randImg = Math.floor(Math.random() * images.length);
 document.getElementById("dashboard-image").setAttribute("data", images[randImg]);
 
+fetch("https://mood-tracker-11bv.onrender.com/analytics/episode-risk", {
+    headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
+})
+.then(r => r.json())
+.then(data => {
+    if (!data.risk || data.risk === "none") return;
+    const colors = { mania: "#b084e8", depression: "#6aafd6", mixed: "#e06c75" };
+    const el = document.getElementById("episode-warning");
+    el.innerHTML = `<div class="warning-card" style="border-color:${colors[data.risk]}">${data.message}</div>`;
+})
+.catch(() => {});
+
 if (localStorage.getItem("hasVisited")) {
     document.getElementById("greeting").innerHTML = randomGreeting[randNum];
 } else {

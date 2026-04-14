@@ -11,12 +11,13 @@ const successMessages = [
     "Entry saved. Be kind to yourself today.",
 ];
 
-function showSuccess() {
+function showSuccess(moodState) {
     const msg = successMessages[Math.floor(Math.random() * successMessages.length)];
     const popup = document.getElementById("success-popup");
     document.getElementById("success-text").textContent = msg;
+    document.getElementById("success-mood").textContent = moodState ? `Today: ${moodState}` : "";
     popup.classList.add("visible");
-    setTimeout(() => popup.classList.remove("visible"), 3000);
+    setTimeout(() => popup.classList.remove("visible"), 4000);
 }
 
 function showError(text) {
@@ -53,7 +54,8 @@ document.getElementById("log-form").addEventListener("submit", async function (e
         });
 
         if (response.ok) {
-            showSuccess();
+            const data = await response.json();
+            showSuccess(data.mood_state);
             form.reset();
         } else {
             const err = await response.json();
