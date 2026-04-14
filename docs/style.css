@@ -57,6 +57,7 @@ body {
 .site-header {
     width: 100%;
     padding: 1.5rem 2rem 0;
+    margin-bottom: 2rem;
     text-align: left;
     align-self: flex-start;
 }
@@ -990,6 +991,44 @@ footer span {
 
 .theme-btn:hover:not(.active) {
     border-color: var(--accent);
+}
+
+.name-row {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.name-row input {
+    flex: 1;
+    padding: 0.6rem 0.75rem;
+    background: var(--background);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    font-family: "Quicksand", sans-serif;
+    font-size: 0.95rem;
+}
+
+.name-row button {
+    padding: 0.6rem 1rem;
+    background: var(--heading);
+    color: #fff;
+    border: none;
+    border-radius: 0.5rem;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.name-row button:hover {
+    opacity: 0.88;
+}
+
+.settings-hint {
+    font-size: 0.85rem;
+    color: var(--accent);
+    margin-top: 0.5rem;
+    min-height: 1rem;
 }
 
 /* === Episode Warning === */

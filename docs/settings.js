@@ -1,3 +1,16 @@
+// Name
+const nameInput = document.getElementById("name-input");
+nameInput.value = localStorage.getItem("name") || "";
+document.getElementById("name-save").addEventListener("click", () => {
+    const val = nameInput.value.trim();
+    if (!val) return;
+    localStorage.setItem("name", val);
+    const msg = document.getElementById("name-message");
+    msg.textContent = "Saved!";
+    setTimeout(() => msg.textContent = "", 2000);
+});
+
+// Theme
 const current = localStorage.getItem("theme") || "system";
 document.querySelectorAll(".theme-btn").forEach(btn => {
     if (btn.dataset.value === current) btn.classList.add("active");
