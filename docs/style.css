@@ -311,6 +311,34 @@ footer a {
     margin-bottom: 1rem;
 }
 
+.entry-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.4rem;
+}
+
+.entry-header h2 {
+    margin-bottom: 0;
+}
+
+.delete-btn {
+    background: none;
+    border: 1px solid rgba(225, 111, 124, 0.4);
+    color: var(--heading);
+    border-radius: 0.4rem;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.8rem;
+    font-family: "Quicksand", sans-serif;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.delete-btn:hover {
+    opacity: 1;
+}
+
 .entry-flags {
     margin-top: 0.4rem;
     font-size: 0.85rem;
@@ -646,6 +674,36 @@ footer a {
 
 .nav-link:hover {
     opacity: 1;
+}
+
+/* === Text pages (terms, attributions) === */
+.text-page {
+    max-width: 680px;
+    margin: 2rem auto;
+    line-height: 1.8;
+}
+
+.text-page h2 {
+    margin-top: 2rem;
+    font-size: 1.1rem;
+}
+
+.text-page p {
+    margin-top: 0.5rem;
+    opacity: 0.85;
+}
+
+.text-page a {
+    color: var(--accent);
+}
+
+.text-meta {
+    opacity: 0.5;
+    font-size: 0.85rem;
+}
+
+footer span {
+    opacity: 0.4;
 }
 
 /* === Success popup === */
