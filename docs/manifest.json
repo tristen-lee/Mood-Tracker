@@ -1,0 +1,21 @@
+{
+    "name": "Cairn",
+    "short_name": "Cairn",
+    "description": "Your daily mental health check-in",
+    "start_url": "/Mood-Tracker/home.html",
+    "display": "standalone",
+    "background_color": "#31373E",
+    "theme_color": "#31373E",
+    "icons": [
+        {
+            "src": "assets/cairn-logo-192px.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "assets/cairn-logo-512px.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
