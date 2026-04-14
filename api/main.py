@@ -10,6 +10,10 @@ from core.scoring import combined_score, mood_state
 
 app = FastAPI()
 
+@app.get("/")
+def health_check():
+    return {"status": "ok"}
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
