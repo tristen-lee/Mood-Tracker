@@ -57,14 +57,14 @@ function formatDate(ts) {
 async function loadAnalytics() {
     try {
         const [recentRes, avgRes, streakRes, byDateRes, byDayRes, distRes, scatterRes, sleepRes] = await Promise.all([
-            fetch("http://127.0.0.1:8000/analytics"),
-            fetch("http://127.0.0.1:8000/analytics/average"),
-            fetch("http://127.0.0.1:8000/analytics/streak"),
-            fetch("http://127.0.0.1:8000/analytics/by-date?days=30"),
-            fetch("http://127.0.0.1:8000/analytics/by-day"),
-            fetch("http://127.0.0.1:8000/analytics/mood-distribution"),
-            fetch("http://127.0.0.1:8000/analytics/sleep-vs-mood"),
-            fetch("http://127.0.0.1:8000/analytics/sleep-over-time"),
+            fetch("http://127.0.0.1:8000/analytics", { headers: { "Authorization": "Bearer " + localStorage.getItem("token") } }),
+            fetch("http://127.0.0.1:8000/analytics/average", { headers: { "Authorization": "Bearer " + localStorage.getItem("token") } }),
+            fetch("http://127.0.0.1:8000/analytics/streak", { headers: { "Authorization": "Bearer " + localStorage.getItem("token") } }),
+            fetch("http://127.0.0.1:8000/analytics/by-date?days=30", { headers: { "Authorization": "Bearer " + localStorage.getItem("token") } }),
+            fetch("http://127.0.0.1:8000/analytics/by-day", { headers: { "Authorization": "Bearer " + localStorage.getItem("token") } }),
+            fetch("http://127.0.0.1:8000/analytics/mood-distribution", { headers: { "Authorization": "Bearer " + localStorage.getItem("token") } }),
+            fetch("http://127.0.0.1:8000/analytics/sleep-vs-mood", { headers: { "Authorization": "Bearer " + localStorage.getItem("token") } }),
+            fetch("http://127.0.0.1:8000/analytics/sleep-over-time", { headers: { "Authorization": "Bearer " + localStorage.getItem("token") } }),
         ]);
 
         const recent  = await recentRes.json();

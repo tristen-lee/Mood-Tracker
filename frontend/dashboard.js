@@ -1,7 +1,12 @@
-const userName = localStorage.getItem("name");
-if (!userName) {
+if (!localStorage.getItem("token")) {
     window.location.href = "home.html";
 }
+
+function logout() {
+    localStorage.clear();
+    window.location.href = "home.html";
+}
+const userName = localStorage.getItem("name");
 
 const randomGreeting = [
     `Hello, ${userName}. How are you doing today?`,
@@ -21,7 +26,17 @@ const randomGreeting = [
     `How are you holding up?`,
 ];
 
-const randNum= Math.floor(Math.random() * randomGreeting.length);
+const randNum = Math.floor(Math.random() * randomGreeting.length);
+
+const images = [
+    "assets/woman_meditating.svg",
+    "assets/Insomnia-rafiki.svg",
+    "assets/Contemplating-rafiki.svg",
+    "assets/mental-health-not-css.svg",
+    "assets/blue-monday-not-css.svg",
+];
+const randImg = Math.floor(Math.random() * images.length);
+document.getElementById("dashboard-image").setAttribute("data", images[randImg]);
 
 if (localStorage.getItem("hasVisited")) {
     document.getElementById("greeting").innerHTML = randomGreeting[randNum];

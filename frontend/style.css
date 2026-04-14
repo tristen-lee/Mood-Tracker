@@ -3,6 +3,7 @@
     --text: #F5F0F0;
     --heading: #E16F7C;
     --accent: #87BBA2;
+    --card: var(--card);
 }
 
 /* === Reset === */
@@ -66,7 +67,7 @@ h2 {
     margin-bottom: 0.25rem;
 }
 
-#centered {
+.centered {
     text-align: center;
 }
 
@@ -80,9 +81,9 @@ h2 {
 }
 
 /* === Image === */
-#woman_meditating {
-    width: 500px;
-    height: 500px;
+#dashboard-image {
+    width: 400px;
+    height: 400px;
     object-fit: contain;
 }
 
@@ -93,7 +94,7 @@ form {
     gap: 0.75rem;
     max-width: 480px;
     margin: 1.5rem auto;
-    background-color: #3d444c;
+    background-color: var(--card);
     padding: 2rem;
     border-radius: 1rem;
 }
@@ -181,7 +182,7 @@ footer a {
 }
 
 .entry-card {
-    background-color: #3d444c;
+    background-color: var(--card);
     border-radius: 0.75rem;
     padding: 1.25rem 1.5rem;
     margin-bottom: 1rem;
@@ -209,7 +210,7 @@ footer a {
 }
 
 .analytics-card {
-    background-color: #3d444c;
+    background-color: var(--card);
     border-radius: 0.75rem;
     padding: 1.25rem 1.5rem;
 }
@@ -240,7 +241,292 @@ footer a {
 .chart-wrapper {
     position: relative;
     height: 360px;
-    background-color: #3d444c;
+    background-color: var(--card);
     border-radius: 0.75rem;
     padding: 1.5rem;
+}
+
+/* === Home / Landing page === */
+.home-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5rem 2rem 4rem;
+    text-align: center;
+}
+
+.hero-text {
+    max-width: 600px;
+}
+
+.hero-eyebrow {
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.25rem;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--heading);
+    margin-bottom: 1.25rem;
+    animation: fadeUp 0.6s ease forwards;
+}
+
+.hero-sub {
+    font-size: 1.1rem;
+    color: var(--text);
+    opacity: 0.8;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+}
+
+.hero-input {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.hero-input input {
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #555;
+    background-color: var(--card);
+    color: var(--text);
+    font-family: "Quicksand", sans-serif;
+    width: 220px;
+}
+
+.hero-input input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.hero-input button {
+    padding: 0.75rem 1.75rem;
+    font-size: 1rem;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 700;
+    background-color: var(--heading);
+    color: #fff;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.hero-input button:hover {
+    opacity: 0.85;
+}
+
+/* === Feature cards === */
+.features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    padding: 0 2rem 4rem;
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.feature-card {
+    background-color: var(--card);
+    border-radius: 1rem;
+    padding: 1.75rem 1.5rem;
+    text-align: center;
+}
+
+.feature-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.feature-card h3 {
+    font-family: "Montserrat Alternates", sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--heading);
+    margin-bottom: 0.5rem;
+}
+
+.feature-card p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    opacity: 0.8;
+}
+
+/* === Auth box === */
+.hero {
+    flex-direction: row;
+    gap: 4rem;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.hero-left {
+    max-width: 480px;
+    text-align: left;
+    padding-top: 1rem;
+}
+
+.auth-box {
+    background-color: var(--card);
+    border-radius: 1rem;
+    padding: 2rem;
+    width: 320px;
+    flex-shrink: 0;
+}
+
+.auth-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    background-color: transparent;
+    color: var(--text);
+    font-family: "Quicksand", sans-serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+.auth-tab.active {
+    background-color: var(--heading);
+    color: #fff;
+    opacity: 1;
+    font-weight: 700;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.auth-form input {
+    padding: 0.65rem 0.9rem;
+    border-radius: 0.5rem;
+    border: 1px solid #555;
+    background-color: var(--background);
+    color: var(--text);
+    font-family: "Quicksand", sans-serif;
+    font-size: 0.95rem;
+}
+
+.auth-form input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.auth-form button {
+    padding: 0.7rem;
+    border: none;
+    border-radius: 0.5rem;
+    background-color: var(--heading);
+    color: #fff;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 0.25rem;
+}
+
+.auth-form button:hover {
+    opacity: 0.88;
+}
+
+.auth-message {
+    font-size: 0.85rem;
+    min-height: 1rem;
+    margin: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+/* === App nav (dashboard) === */
+.app-nav {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    width: 100%;
+    max-width: 400px;
+    margin-top: 1.5rem;
+}
+
+.nav-btn {
+    display: block;
+    padding: 1rem;
+    background-color: var(--card);
+    color: var(--text);
+    text-decoration: none;
+    border-radius: 0.75rem;
+    font-family: "Quicksand", sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.nav-btn:hover {
+    background-color: #4a525b;
+}
+
+.nav-logout {
+    color: var(--heading);
+}
+
+/* === Top nav (inner pages) === */
+.top-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0 0 1.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    margin-bottom: 1.5rem;
+}
+
+.nav-home {
+    font-weight: 700;
+    color: var(--accent);
+    text-decoration: none;
+    margin-right: auto;
+}
+
+.nav-home:hover {
+    text-decoration: underline;
+}
+
+.nav-link {
+    color: var(--text);
+    text-decoration: none;
+    opacity: 0.7;
+    font-size: 0.9rem;
+}
+
+.nav-link:hover {
+    opacity: 1;
 }

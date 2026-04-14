@@ -2,7 +2,7 @@ async function loadEntries() {
     const container = document.getElementById("entries-list");
 
     try {
-        const response = await fetch("http://127.0.0.1:8000/entries");
+        const response = await fetch("http://127.0.0.1:8000/entries", { headers: { "Authorization": "Bearer " + localStorage.getItem("token") } });
         const entries = await response.json();
 
         if (entries.length === 0) {

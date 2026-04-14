@@ -11,13 +11,13 @@
 </head>
 <body class="centered-layout">
     <h1><div id="greeting"></div></h1>
-    <img id="woman_meditating" src="assets/woman_meditating.svg">
+    <object id="dashboard-image" type="image/svg+xml" data="assets/woman_meditating.svg"></object>
     <h2>What would you like to do today?</h2>
-    <nav>
-        <a href="dashboard.html">Home</a>
-        <a href="log.html">Check In</a>
-        <a href="entries.html">My Entries</a>
-        <a href="analytics.html">Analytics</a>
+    <nav class="app-nav">
+        <a href="log.html" class="nav-btn">✏️ Check In</a>
+        <a href="entries.html" class="nav-btn">📋 My Entries</a>
+        <a href="analytics.html" class="nav-btn">📈 Analytics</a>
+        <button class="nav-btn nav-logout" onclick="logout()">🚪 Log Out</button>
     </nav>
     <footer>
         <a href="https://storyset.com/happy">Happy illustrations by Storyset</a>
