@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check In — Mood Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="top-nav">
+        <a href="dashboard.html" class="nav-home">&larr; Home</a>
+        <a href="log.html" class="nav-link">Check In</a>
+        <a href="entries.html" class="nav-link">My Entries</a>
+        <a href="analytics.html" class="nav-link">Analytics</a>
+    </nav>
+
+    <h1>Ready to begin?</h1>
+
+    <form id="log-form">
+        <label>Mood Score (1–10)</label>
+        <input type="number" name="mood_score" min="1" max="10" required>
+
+        <label>Hours of sleep last night</label>
+        <input type="number" name="sleep" min="0" max="24" required>
+
+        <label>Energy level (0–10)</label>
+        <input type="number" name="energy_level" min="0" max="10" required>
+
+        <div class="checkbox-row">
+            <label>Feeling extra elevated today?</label>
+            <input type="checkbox" name="mania">
+        </div>
+        <div class="checkbox-row">
+            <label>Feeling disconnected from reality?</label>
+            <input type="checkbox" name="psychosis">
+        </div>
+        <div class="checkbox-row">
+            <label>Feeling low or empty inside?</label>
+            <input type="checkbox" name="depression">
+        </div>
+        <div class="checkbox-row">
+            <label>Is your mind going to dark places?</label>
+            <input type="checkbox" name="intrusive_thoughts">
+        </div>
+        <div class="checkbox-row">
+            <label>Thoughts moving too fast to catch?</label>
+            <input type="checkbox" name="racing_thoughts">
+        </div>
+        <div class="checkbox-row">
+            <label>Feeling more irritable than usual?</label>
+            <input type="checkbox" name="irritability">
+        </div>
+        <div class="checkbox-row">
+            <label>Pulling away from people today?</label>
+            <input type="checkbox" name="social_withdrawal">
+        </div>
+
+        <label>Notes</label>
+        <textarea name="notes" rows="3" placeholder="Anything on your mind..."></textarea>
+
+        <button type="submit">All Done!</button>
+        <div id="form-message"></div>
+    </form>
+
+    <footer>
+        <a href="https://storyset.com/happy">Happy illustrations by Storyset</a>
+    </footer>
+
+    <script src="log.js"></script>
+</body>
+</html>
