@@ -1,5 +1,5 @@
 :root {
-    --background: #31373E;
+    --background: #31383f;
     --text: #F5F0F0;
     --heading: #E16F7C;
     --accent: #87BBA2;
@@ -34,6 +34,32 @@ body {
     overflow-x: hidden;
 }
 
+/* === Logo === */
+.site-header {
+    width: 100%;
+    padding: 1.5rem 2rem 0;
+    text-align: left;
+    align-self: flex-start;
+}
+
+.logo-link {
+    display: inline-block;
+    line-height: 0;
+}
+
+.logo {
+    height: 28px;
+    width: auto;
+}
+
+.logo-nav {
+    height: 20px;
+}
+
+.top-nav .logo-link {
+    margin-right: auto;
+}
+
 /* === Nav === */
 nav {
     display: flex;
@@ -47,7 +73,7 @@ nav a {
 }
 
 nav a:hover {
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 /* === Headings === */
@@ -143,6 +169,63 @@ label {
     color: var(--text);
 }
 
+/* === Sliders === */
+.slider-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.slider-row label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.slider-val {
+    font-family: "Montserrat Alternates", sans-serif;
+    font-size: 1.1rem;
+    color: var(--accent);
+    font-weight: 600;
+    min-width: 1.5rem;
+    text-align: right;
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #555;
+    outline: none;
+    cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    background: var(--heading);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: none;
+}
+
 /* === Checkbox rows === */
 .checkbox-row {
     display: flex;
@@ -159,11 +242,34 @@ label {
 }
 
 input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
     width: 1.4rem;
     height: 1.4rem;
-    cursor: pointer;
     flex-shrink: 0;
-    accent-color: var(--accent);
+    cursor: pointer;
+    border: 2px solid #666;
+    border-radius: 5px;
+    background-color: transparent;
+    position: relative;
+    transition: background-color 0.15s, border-color 0.15s;
+}
+
+input[type="checkbox"]:checked {
+    background-color: var(--accent);
+    border-color: var(--accent);
+}
+
+input[type="checkbox"]:checked::before {
+    content: "✓";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.85rem;
+    color: #1a1a1a;
+    font-weight: 700;
+    line-height: 1;
 }
 
 /* === Footer === */
@@ -540,6 +646,33 @@ footer a {
 
 .nav-link:hover {
     opacity: 1;
+}
+
+/* === Success popup === */
+#success-popup {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(6rem);
+    background-color: var(--accent);
+    color: #1a1a1a;
+    padding: 1rem 1.75rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-align: center;
+    max-width: 320px;
+    width: 90%;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    z-index: 999;
+}
+
+#success-popup.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
 
 /* === Mobile === */

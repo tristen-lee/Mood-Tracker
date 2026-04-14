@@ -34,6 +34,7 @@ const images = [
     "assets/Contemplating-rafiki.svg",
     "assets/mental-health-not-css.svg",
     "assets/blue-monday-not-css.svg",
+    "assets/Healthy habit-pana.svg",
 ];
 const randImg = Math.floor(Math.random() * images.length);
 document.getElementById("dashboard-image").setAttribute("data", images[randImg]);

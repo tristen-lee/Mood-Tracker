@@ -1,7 +1,28 @@
-function showMessage(text, type) {
+const successMessages = [
+    "You showed up today. That matters.",
+    "Entry logged. You're doing the work.",
+    "Another day tracked. Keep going.",
+    "Logged! Small steps add up.",
+    "Done. You should be proud of yourself.",
+    "That's one more day of data for you.",
+    "Checked in. That took courage.",
+    "Logged and noted. Take care of yourself today.",
+    "You came back. That's everything.",
+    "Entry saved. Be kind to yourself today.",
+];
+
+function showSuccess() {
+    const msg = successMessages[Math.floor(Math.random() * successMessages.length)];
+    const popup = document.getElementById("success-popup");
+    document.getElementById("success-text").textContent = msg;
+    popup.classList.add("visible");
+    setTimeout(() => popup.classList.remove("visible"), 3000);
+}
+
+function showError(text) {
     const msg = document.getElementById("form-message");
     msg.textContent = text;
-    msg.className = type;
+    msg.className = "error";
     setTimeout(() => { msg.textContent = ""; msg.className = ""; }, 3000);
 }
 
@@ -32,13 +53,13 @@ document.getElementById("log-form").addEventListener("submit", async function (e
         });
 
         if (response.ok) {
-            showMessage("Entry saved!", "success");
+            showSuccess();
             form.reset();
         } else {
             const err = await response.json();
-            showMessage("Something went wrong: " + err.detail, "error");
+            showError("Something went wrong: " + err.detail);
         }
     } catch {
-        showMessage("Can't reach the server. Is it running?", "error");
+        showError("Can't reach the server. Is it running?");
     }
 });

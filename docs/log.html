@@ -11,7 +11,8 @@
 </head>
 <body>
     <nav class="top-nav">
-        <a href="dashboard.html" class="nav-home">&larr; Home</a>
+        <a href="dashboard.html" class="logo-link"><img src="assets/cairn.svg" alt="Cairn" class="logo logo-nav"></a>
+        <a href="dashboard.html" class="nav-link">Home</a>
         <a href="log.html" class="nav-link">Check In</a>
         <a href="entries.html" class="nav-link">My Entries</a>
         <a href="analytics.html" class="nav-link">Analytics</a>
@@ -20,14 +21,20 @@
     <h1>Ready to begin?</h1>
 
     <form id="log-form">
-        <label>Mood Score (1–10)</label>
-        <input type="number" name="mood_score" min="1" max="10" required>
+        <div class="slider-row">
+            <label>Mood Score <span class="slider-val" id="mood-val">5</span></label>
+            <input type="range" name="mood_score" min="1" max="10" value="5" oninput="document.getElementById('mood-val').textContent=this.value">
+        </div>
 
-        <label>Hours of sleep last night</label>
-        <input type="number" name="sleep" min="0" max="24" required>
+        <div class="slider-row">
+            <label>Hours of Sleep <span class="slider-val" id="sleep-val">7</span></label>
+            <input type="range" name="sleep" min="0" max="24" value="7" oninput="document.getElementById('sleep-val').textContent=this.value">
+        </div>
 
-        <label>Energy level (0–10)</label>
-        <input type="number" name="energy_level" min="0" max="10" required>
+        <div class="slider-row">
+            <label>Energy Level <span class="slider-val" id="energy-val">5</span></label>
+            <input type="range" name="energy_level" min="0" max="10" value="5" oninput="document.getElementById('energy-val').textContent=this.value">
+        </div>
 
         <div class="checkbox-row">
             <label>Feeling extra elevated today?</label>
@@ -68,6 +75,10 @@
     <footer>
         <a href="https://storyset.com/happy">Happy illustrations by Storyset</a>
     </footer>
+
+    <div id="success-popup">
+        <p id="success-text"></p>
+    </div>
 
     <script src="log.js"></script>
 </body>
