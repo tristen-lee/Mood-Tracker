@@ -171,6 +171,13 @@ def create_entry(entry: Entry, authorization: Optional[str] = Header(None)):
     user_id = get_user_id(authorization)
     conn = get_connection()
     cur = conn.cursor()
+    cur.execute(
+        "SELECT id FROM entries WHERE user_id = %s AND timestamp::date = CURRENT_DATE",
+        (user_id,)
+    )
+    if cur.fetchone():
+        conn.close()
+        raise HTTPException(status_code=409, detail="You've already checked in today. Go to My Entries to edit it.")
     cur.execute("""
         INSERT INTO entries (user_id, mood_score, sleep, energy_level, mania, psychosis,
             depression, intrusive_thoughts, racing_thoughts, irritability, social_withdrawal, notes)

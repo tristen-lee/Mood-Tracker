@@ -129,12 +129,12 @@ async function loadEntries() {
         allEntries = entries;
 
         container.innerHTML = entries.map(entry => {
-            const date = new Date(entry.timestamp).toLocaleDateString("en-US", {
+            const [year, month, day] = entry.timestamp.slice(0, 10).split("-");
+            const localDate = `${year}-${month}-${day}T12:00:00`;
+            const date = new Date(localDate).toLocaleDateString("en-US", {
                 month: "long", day: "numeric", year: "numeric"
             });
-            const deleteDate = new Date(entry.timestamp).toLocaleDateString("en-US", {
-                month: "2-digit", day: "2-digit", year: "numeric"
-            });
+            const deleteDate = `${month}/${day}/${year}`;
 
             const flags = [
                 entry.mania && "Elevated",

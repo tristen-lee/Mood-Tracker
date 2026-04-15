@@ -27,12 +27,13 @@ async function loadMeds() {
     list.innerHTML = meds.map(m => `
         <div class="med-item">
             <span>${m.name}</span>
-            <button class="med-delete" onclick="deleteMed(${m.id})">Remove</button>
+            <button class="med-delete" onclick="deleteMed(${m.id}, '${m.name}')">Remove</button>
         </div>
     `).join("");
 }
 
-async function deleteMed(id) {
+async function deleteMed(id, name) {
+    if (!confirm(`Remove ${name}?`)) return;
     await fetch(`${API}/medications/${id}`, {
         method: "DELETE",
         headers: { "Authorization": "Bearer " + token() }

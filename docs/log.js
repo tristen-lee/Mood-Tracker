@@ -17,9 +17,11 @@ function showSuccess(moodState) {
     const msg = successMessages[Math.floor(Math.random() * successMessages.length)];
     const popup = document.getElementById("success-popup");
     document.getElementById("success-text").textContent = msg;
-    document.getElementById("success-mood").textContent = moodState ? `Today: ${moodState}` : "";
-    popup.classList.add("visible");
-    setTimeout(() => popup.classList.remove("visible"), 4000);
+    document.getElementById("success-mood").textContent = moodState || "";
+    popup.classList.remove("hidden");
+    setTimeout(() => {
+        window.location.href = "dashboard.html";
+    }, 2800);
 }
 
 function showError(text) {
@@ -36,7 +38,10 @@ async function loadMeds() {
         });
         const meds = await res.json();
         const container = document.getElementById("med-checkboxes");
-        if (!meds.length) return;
+        if (!meds.length) {
+            container.innerHTML = `<p class="med-section-label" style="opacity:0.5">No medications set up. <a href="settings.html">Add them in Settings.</a></p>`;
+            return;
+        }
         container.innerHTML = `
             <p class="med-section-label">Medications taken today</p>
             ${meds.map(m => `
@@ -83,6 +88,9 @@ document.getElementById("log-form").addEventListener("submit", async function (e
             const data = await response.json();
             showSuccess(data.mood_state);
             form.reset();
+            document.getElementById("mood-val").textContent = "5";
+            document.getElementById("sleep-val").textContent = "7";
+            document.getElementById("energy-val").textContent = "5";
             loadMeds();
         } else {
             const err = await response.json();
