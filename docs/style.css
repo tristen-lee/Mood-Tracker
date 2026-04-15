@@ -369,7 +369,8 @@ footer a {
     margin-top: 0.4rem;
     font-size: 0.9rem;
     font-style: italic;
-    color: #b0b8b0;
+    color: var(--text);
+    opacity: 0.6;
 }
 
 /* === Analytics stat cards (3-column row) === */

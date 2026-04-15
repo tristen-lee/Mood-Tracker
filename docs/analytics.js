@@ -1,13 +1,14 @@
 Chart.defaults.font.size = 14;
 Chart.defaults.font.family = "Quicksand";
 
+const style = getComputedStyle(document.documentElement);
 const C = {
-    pink:      "#E16F7C",
-    green:     "#87BBA2",
-    text:      "#F5F0F0",
+    pink:      style.getPropertyValue("--heading").trim() || "#E16F7C",
+    green:     style.getPropertyValue("--accent").trim() || "#87BBA2",
+    text:      style.getPropertyValue("--text").trim() || "#F5F0F0",
     pinkFill:  "rgba(225, 111, 124, 0.2)",
     greenFill: "rgba(135, 187, 162, 0.2)",
-    grid:      "rgba(255, 255, 255, 0.06)",
+    grid:      style.getPropertyValue("--nav-divider").trim() || "rgba(255,255,255,0.06)",
 };
 
 const STATE_COLORS = {
