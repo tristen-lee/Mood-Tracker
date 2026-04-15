@@ -1036,6 +1036,26 @@ footer span {
     opacity: 0.88;
 }
 
+.export-btn {
+    display: inline-block;
+    margin-bottom: 1.25rem;
+    padding: 0.6rem 1.25rem;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 0.5rem;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.export-btn:hover {
+    background: var(--accent);
+    color: #fff;
+}
+
 .med-item {
     display: flex;
     align-items: center;

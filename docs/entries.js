@@ -1,5 +1,35 @@
 const API = "https://mood-tracker-11bv.onrender.com";
 let currentEditDate = null;
+let allEntries = [];
+
+function exportCSV() {
+    if (!allEntries.length) return alert("No entries to export.");
+    const headers = ["Date", "Mood Score", "Sleep (hrs)", "Energy Level", "Elevated", "Disconnected", "Low", "Intrusive Thoughts", "Racing Thoughts", "Irritability", "Social Withdrawal", "Medications Taken", "Notes"];
+    const yn = v => v ? "Yes" : "No";
+    const rows = allEntries.map(e => [
+        new Date(e.timestamp).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+        e.mood_score,
+        e.sleep,
+        e.energy_level,
+        yn(e.mania),
+        yn(e.psychosis),
+        yn(e.depression),
+        yn(e.intrusive_thoughts),
+        yn(e.racing_thoughts),
+        yn(e.irritability),
+        yn(e.social_withdrawal),
+        (e.medications_taken || []).join(", "),
+        `"${(e.notes || "").replace(/"/g, '""')}"`,
+    ]);
+    const csv = [headers, ...rows].map(r => r.join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "cairn-entries.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+}
 
 async function deleteEntry(date) {
     if (!confirm(`Delete entry for ${date}?`)) return;
@@ -96,6 +126,7 @@ async function loadEntries() {
         }
 
         entries.reverse();
+        allEntries = entries;
 
         container.innerHTML = entries.map(entry => {
             const date = new Date(entry.timestamp).toLocaleDateString("en-US", {
