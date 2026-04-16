@@ -1,12 +1,16 @@
-from fastapi import FastAPI, HTTPException, Header
+from fastapi import FastAPI, HTTPException, Header, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from datetime import datetime, timedelta
 from collections import defaultdict, Counter
 from typing import Optional
+import os
+import anthropic
 from db.database import get_connection
 from db.auth import hash_password, verify_password, create_token, decode_token
 from core.scoring import combined_score, mood_state
+
+anthropic_client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
 app = FastAPI()
 
@@ -49,6 +53,9 @@ class Entry(BaseModel):
 
 class MedicationBody(BaseModel):
     name: str
+
+class JasperMessage(BaseModel):
+    message: str
 
 
 # --- Auth helper ---
@@ -401,3 +408,110 @@ def get_episode_risk(authorization: Optional[str] = Header(None)):
         }
 
     return {"risk": "none", "message": "", "triggers": []}
+
+
+# --- Jasper ---
+
+def build_entry_context(entries):
+    if not entries:
+        return "No entries yet."
+    recent = entries[-7:]
+    lines = []
+    for e in recent:
+        date = e["timestamp"].strftime("%b %d")
+        score = combined_score(e)
+        state = mood_state(score)
+        flags = [k for k in ["mania", "depression", "racing_thoughts", "intrusive_thoughts", "social_withdrawal", "irritability", "psychosis"] if e.get(k)]
+        line = f"{date}: mood {e['mood_score']}/10, sleep {e['sleep']}h, energy {e['energy_level']}/10, state={state}"
+        if flags:
+            line += f", symptoms: {', '.join(flags)}"
+        if e.get("notes"):
+            line += f', notes: "{e["notes"]}"'
+        lines.append(line)
+    return "\n".join(lines)
+
+def update_summary(user_id, user_message, jasper_response, old_summary):
+    try:
+        result = anthropic_client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=200,
+            messages=[{"role": "user", "content": f"""Previous summary: {old_summary or 'None'}
+
+New exchange:
+User: {user_message}
+Jasper: {jasper_response}
+
+Write a brief updated summary (under 150 words) capturing key info about this person's mental state, recurring themes, and anything worth remembering. Be factual and compassionate."""}]
+        )
+        new_summary = result.content[0].text
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            INSERT INTO jasper_summaries (user_id, summary, updated_at)
+            VALUES (%s, %s, NOW())
+            ON CONFLICT (user_id) DO UPDATE SET summary = %s, updated_at = NOW()
+        """, (user_id, new_summary, new_summary))
+        conn.commit()
+        conn.close()
+    except Exception:
+        pass
+
+@app.post("/jasper")
+def jasper_chat(body: JasperMessage, background_tasks: BackgroundTasks, authorization: Optional[str] = Header(None)):
+    user_id = get_user_id(authorization)
+
+    entries = fetch_entries(user_id)
+    entry_context = build_entry_context(entries)
+
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT name FROM users WHERE id = %s", (user_id,))
+    name_row = cur.fetchone()
+    user_name = name_row[0] if name_row else "friend"
+    try:
+        cur.execute("SELECT summary FROM jasper_summaries WHERE user_id = %s", (user_id,))
+        summary_row = cur.fetchone()
+        old_summary = summary_row[0] if summary_row else ""
+    except Exception:
+        old_summary = ""
+    conn.close()
+
+    crisis_flag = any(w in body.message.lower() for w in ["crisis", "suicidal", "end my life", "want to die", "hurt myself", "can't go on"])
+    episode_risk = "none"
+    if len(entries) >= 7:
+        last = entries[-1]
+        if last.get("racing_thoughts") and last.get("depression"):
+            episode_risk = "mixed"
+
+    crisis_note = ""
+    if crisis_flag or episode_risk == "mixed":
+        crisis_note = "\nIf this person seems to be in distress or mentions crisis, gently surface the 988 Suicide & Crisis Lifeline — warmly, like a friend, never clinical."
+
+    system_prompt = f"""You are Jasper, a warm companion built into Cairn — a mental health tracking app for people with bipolar disorder.
+
+Your personality: grounded, genuine, caring — like a trusted friend by a campfire. Never clinical, never robotic, never preachy. You listen more than you lecture. Keep responses conversational and warm — you're texting a friend, not writing a report. Short responses are usually better.
+
+Rules:
+- Never diagnose or give medical advice
+- Never be dramatic or alarming
+- Reference the user's real data naturally when it's relevant — but don't lead with data every single message
+- If the user seems in crisis, gently mention 988 — always warm, never cold{crisis_note}
+
+The user's name is {user_name}.
+
+Their recent check-ins:
+{entry_context}
+
+What you remember about them:
+{old_summary if old_summary else "This is your first conversation with them."}"""
+
+    result = anthropic_client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=1000,
+        system=system_prompt,
+        messages=[{"role": "user", "content": body.message}]
+    )
+
+    response_text = result.content[0].text
+    background_tasks.add_task(update_summary, user_id, body.message, response_text, old_summary)
+    return {"response": response_text}

@@ -1432,6 +1432,18 @@ footer span {
     flex-shrink: 0;
 }
 
+.jasper-back {
+    font-size: 0.9rem;
+    color: var(--text);
+    opacity: 0.65;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.jasper-back:hover {
+    opacity: 1;
+}
+
 .jasper-header-title {
     font-family: "Montserrat Alternates", sans-serif;
     font-size: 1.1rem;
@@ -1530,17 +1542,20 @@ footer span {
 
 .jasper-input-row {
     display: flex;
+    flex-direction: row;
     align-items: flex-end;
     gap: 0.6rem;
     background: var(--card);
     border-radius: 1rem;
     padding: 0.6rem 0.6rem 0.6rem 1rem;
+    max-width: none;
+    margin: 0;
 }
 
 .jasper-input {
     flex: 1;
     background: transparent;
-    border: none;
+    border: none !important;
     outline: none;
     resize: none;
     font-family: "Quicksand", sans-serif;
@@ -1549,6 +1564,8 @@ footer span {
     line-height: 1.5;
     max-height: 140px;
     overflow-y: auto;
+    padding: 0.25rem 0;
+    border-radius: 0;
 }
 
 .jasper-input::placeholder {
@@ -1557,18 +1574,21 @@ footer span {
 }
 
 .jasper-send {
-    background: var(--accent);
+    background: var(--accent) !important;
     border: none;
     border-radius: 0.7rem;
-    width: 36px;
+    width: 36px !important;
     height: 36px;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     color: #1e2a24;
     flex-shrink: 0;
     transition: opacity 0.15s;
+    padding: 0 !important;
+    margin-top: 0 !important;
+    font-size: 1rem;
 }
 
 .jasper-send:disabled {
