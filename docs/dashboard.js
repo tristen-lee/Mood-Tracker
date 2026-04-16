@@ -78,3 +78,38 @@ if (localStorage.getItem("hasVisited")) {
     localStorage.setItem("hasVisited", "true");
 }
 
+// What's New — show Jasper walkthrough once for existing users
+if (!localStorage.getItem("jasperWalkthroughSeen")) {
+    const overlay = document.getElementById("whats-new-overlay");
+    const steps = overlay.querySelectorAll(".whats-new-step");
+    const dots = overlay.querySelectorAll(".wn-dot");
+    const nextBtn = document.getElementById("whats-new-next");
+    const skipBtn = document.getElementById("whats-new-skip");
+    let current = 0;
+
+    overlay.classList.remove("hidden");
+
+    function goToStep(n) {
+        steps[current].classList.remove("active");
+        dots[current].classList.remove("active");
+        current = n;
+        steps[current].classList.add("active");
+        dots[current].classList.add("active");
+        nextBtn.textContent = current === steps.length - 1 ? "Talk to Jasper →" : "Next";
+    }
+
+    nextBtn.addEventListener("click", () => {
+        if (current < steps.length - 1) {
+            goToStep(current + 1);
+        } else {
+            localStorage.setItem("jasperWalkthroughSeen", "true");
+            window.location.href = "jasper.html";
+        }
+    });
+
+    skipBtn.addEventListener("click", () => {
+        localStorage.setItem("jasperWalkthroughSeen", "true");
+        overlay.classList.add("hidden");
+    });
+}
+

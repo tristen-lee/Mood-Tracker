@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jasper — Cairn</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="theme.js"></script>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#31373E">
+    <link rel="apple-touch-icon" href="assets/cairn-logo-512px.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+</head>
+<body class="jasper-page">
+    <header class="site-header">
+        <a href="dashboard.html" class="logo-link"><img src="assets/cairn.svg" alt="Cairn" class="logo"></a>
+        <span class="jasper-header-title">Jasper</span>
+    </header>
+
+    <main class="jasper-main">
+        <div id="jasper-messages" class="jasper-messages">
+            <div class="jasper-msg jasper-msg--jasper">
+                <span class="jasper-bubble" id="jasper-greeting"></span>
+            </div>
+        </div>
+
+        <div class="jasper-input-area">
+            <form id="jasper-form" class="jasper-input-row" autocomplete="off">
+                <textarea
+                    id="jasper-input"
+                    class="jasper-input"
+                    placeholder="Message Jasper…"
+                    rows="1"
+                    maxlength="1000"
+                ></textarea>
+                <button type="submit" class="jasper-send" id="jasper-send-btn" aria-label="Send">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+            </form>
+            <p class="jasper-disclaimer">Jasper is not a therapist. If you're in crisis, call or text <strong>988</strong>.</p>
+        </div>
+    </main>
+
+    <script src="jasper.js?v=1"></script>
+</body>
+</html>

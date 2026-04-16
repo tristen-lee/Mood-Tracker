@@ -25,11 +25,44 @@
         <a href="log.html" class="nav-btn">✏️ Check In</a>
         <a href="entries.html" class="nav-btn">📋 My Entries</a>
         <a href="analytics.html" class="nav-btn">📈 Analytics</a>
+        <a href="jasper.html" class="nav-btn nav-btn--jasper">✦ Talk to Jasper</a>
         <button class="nav-btn nav-logout" onclick="logout()">🚪 Log Out</button>
     </nav>
+
+    <!-- What's New walkthrough -->
+    <div id="whats-new-overlay" class="modal-overlay hidden">
+        <div class="whats-new-box">
+            <div class="whats-new-steps">
+                <div class="whats-new-step active" data-step="0">
+                    <div class="whats-new-icon">✦</div>
+                    <h2>Meet Jasper</h2>
+                    <p>Cairn just got a companion. Jasper is an AI who knows your check-in history and is here to talk — about how you're feeling, what you're noticing, whatever's on your mind.</p>
+                </div>
+                <div class="whats-new-step" data-step="1">
+                    <div class="whats-new-icon">🧠</div>
+                    <h2>He knows your data</h2>
+                    <p>Jasper reads your recent entries before every conversation. He'll notice patterns, ask follow-up questions, and remember context across sessions.</p>
+                </div>
+                <div class="whats-new-step" data-step="2">
+                    <div class="whats-new-icon">💬</div>
+                    <h2>Not a therapist. A friend.</h2>
+                    <p>Jasper won't give you a diagnosis. He's just here to listen, reflect things back, and help you feel a little less alone with it all.</p>
+                </div>
+            </div>
+            <div class="whats-new-dots" id="whats-new-dots">
+                <span class="wn-dot active"></span>
+                <span class="wn-dot"></span>
+                <span class="wn-dot"></span>
+            </div>
+            <div class="whats-new-actions">
+                <button class="onboarding-btn" id="whats-new-next">Next</button>
+                <button class="wn-skip" id="whats-new-skip">Skip</button>
+            </div>
+        </div>
+    </div>
     <footer>
         <a href="terms.html">Terms</a><span> · </span><a href="attributions.html">Attributions</a><span> · </span><a href="settings.html">Settings</a><span> · </span><a href="help.html">Help</a>
     </footer>
-    <script src="dashboard.js?v=2"></script>
+    <script src="dashboard.js?v=3"></script>
 </body>
 </html>
