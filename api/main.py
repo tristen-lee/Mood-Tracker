@@ -56,6 +56,7 @@ class MedicationBody(BaseModel):
 
 class JasperMessage(BaseModel):
     message: str
+    history: Optional[list] = []
 
 
 # --- Auth helper ---
@@ -505,11 +506,13 @@ Their recent check-ins:
 What you remember about them:
 {old_summary if old_summary else "This is your first conversation with them."}"""
 
+    messages = list(body.history) + [{"role": "user", "content": body.message}]
+
     result = anthropic_client.messages.create(
         model="claude-sonnet-4-6",
         max_tokens=1000,
         system=system_prompt,
-        messages=[{"role": "user", "content": body.message}]
+        messages=messages
     )
 
     response_text = result.content[0].text

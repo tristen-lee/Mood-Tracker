@@ -4,6 +4,7 @@ if (!localStorage.getItem("token")) {
 
 const API = "https://mood-tracker-11bv.onrender.com";
 const name = localStorage.getItem("name") || "friend";
+const STORAGE_KEY = "jasper_history";
 
 const greetings = [
     `Hey ${name}. What's going on?`,
@@ -18,17 +19,17 @@ const greetings = [
     `Glad you stopped by. What's going on with you?`,
 ];
 
-document.getElementById("jasper-greeting").textContent =
-    greetings[Math.floor(Math.random() * greetings.length)];
-
 const messagesEl = document.getElementById("jasper-messages");
 const form = document.getElementById("jasper-form");
 const input = document.getElementById("jasper-input");
 const sendBtn = document.getElementById("jasper-send-btn");
 
-function addMessage(text, role) {
+// history = [{role: "user"|"assistant", content: "..."}]
+let history = [];
+
+function renderBubble(text, role) {
     const row = document.createElement("div");
-    row.className = `jasper-msg jasper-msg--${role}`;
+    row.className = `jasper-msg jasper-msg--${role === "assistant" ? "jasper" : "user"}`;
     const bubble = document.createElement("span");
     bubble.className = "jasper-bubble";
     bubble.textContent = text;
@@ -44,6 +45,33 @@ function addTyping() {
     messagesEl.appendChild(row);
     messagesEl.scrollTop = messagesEl.scrollHeight;
     return row;
+}
+
+function saveHistory() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+}
+
+function loadHistory() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            history = JSON.parse(saved);
+            history.forEach(msg => renderBubble(msg.content, msg.role));
+            return true;
+        }
+    } catch {
+        history = [];
+    }
+    return false;
+}
+
+// On load: restore history or show greeting
+const hadHistory = loadHistory();
+if (!hadHistory) {
+    const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+    document.getElementById("jasper-greeting").textContent = greeting;
+} else {
+    document.getElementById("jasper-greeting").closest(".jasper-msg").remove();
 }
 
 input.addEventListener("input", () => {
@@ -63,7 +91,7 @@ form.addEventListener("submit", async (e) => {
     const text = input.value.trim();
     if (!text) return;
 
-    addMessage(text, "user");
+    renderBubble(text, "user");
     input.value = "";
     input.style.height = "auto";
     sendBtn.disabled = true;
@@ -76,22 +104,25 @@ form.addEventListener("submit", async (e) => {
                 "Content-Type": "application/json",
                 "Authorization": "Bearer " + localStorage.getItem("token"),
             },
-            body: JSON.stringify({ message: text }),
+            body: JSON.stringify({ message: text, history }),
         });
 
         typing.remove();
 
         if (!res.ok) {
             const err = await res.json().catch(() => ({}));
-            addMessage(err.detail || "Something went wrong. Try again.", "jasper");
+            renderBubble(err.detail || "Something went wrong. Try again.", "assistant");
             return;
         }
 
         const data = await res.json();
-        addMessage(data.response, "jasper");
+        history.push({ role: "user", content: text });
+        history.push({ role: "assistant", content: data.response });
+        saveHistory();
+        renderBubble(data.response, "assistant");
     } catch {
         typing.remove();
-        addMessage("Couldn't reach Jasper right now. Check your connection.", "jasper");
+        renderBubble("Couldn't reach Jasper right now. Check your connection.", "assistant");
     } finally {
         sendBtn.disabled = false;
         input.focus();
