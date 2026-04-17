@@ -65,6 +65,17 @@ function loadHistory() {
     return false;
 }
 
+function newChat() {
+    localStorage.removeItem(STORAGE_KEY);
+    history = [];
+    messagesEl.innerHTML = "";
+    const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+    const row = document.createElement("div");
+    row.className = "jasper-msg jasper-msg--jasper";
+    row.innerHTML = `<span class="jasper-bubble">${greeting}</span>`;
+    messagesEl.appendChild(row);
+}
+
 // On load: restore history or show greeting
 const hadHistory = loadHistory();
 if (!hadHistory) {
