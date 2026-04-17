@@ -411,6 +411,107 @@ def get_episode_risk(authorization: Optional[str] = Header(None)):
     return {"risk": "none", "message": "", "triggers": []}
 
 
+# --- Monthly Summary ---
+
+@app.get("/analytics/monthly-summary")
+def monthly_summary(authorization: Optional[str] = Header(None)):
+    user_id = get_user_id(authorization)
+    all_entries = fetch_entries(user_id)
+    if not all_entries:
+        return {"error": "no_data"}
+
+    from datetime import date
+    today = date.today()
+    this_month = today.month
+    this_year = today.year
+    last_month = this_month - 1 if this_month > 1 else 12
+    last_month_year = this_year if this_month > 1 else this_year - 1
+
+    def entries_for(month, year):
+        return [e for e in all_entries if e["timestamp"].month == month and e["timestamp"].year == year]
+
+    def stats(entries):
+        if not entries:
+            return None
+        scores = [combined_score(e) for e in entries]
+        states = [mood_state(s) for s in scores]
+        symptom_keys = ["mania", "depression", "racing_thoughts", "intrusive_thoughts", "irritability", "social_withdrawal", "psychosis"]
+        symptom_counts = {k: sum(1 for e in entries if e.get(k)) for k in symptom_keys}
+        state_counts = Counter(states)
+        most_common_state = state_counts.most_common(1)[0][0]
+
+        # best/worst week by avg combined score
+        weeks = defaultdict(list)
+        for e in entries:
+            week_num = e["timestamp"].isocalendar()[1]
+            weeks[week_num].append(combined_score(e))
+        week_avgs = {w: sum(v)/len(v) for w, v in weeks.items()}
+        best_week = max(week_avgs, key=week_avgs.get) if week_avgs else None
+        worst_week = min(week_avgs, key=week_avgs.get) if week_avgs else None
+
+        return {
+            "entry_count": len(entries),
+            "avg_mood": round(sum(e["mood_score"] for e in entries) / len(entries), 1),
+            "avg_sleep": round(sum(e["sleep"] for e in entries) / len(entries), 1),
+            "avg_energy": round(sum(e["energy_level"] for e in entries) / len(entries), 1),
+            "avg_score": round(sum(scores) / len(scores), 1),
+            "most_common_state": most_common_state,
+            "symptom_counts": symptom_counts,
+            "best_week_avg": round(week_avgs[best_week], 1) if best_week else None,
+            "worst_week_avg": round(week_avgs[worst_week], 1) if worst_week else None,
+        }
+
+    this = entries_for(this_month, this_year)
+    last = entries_for(last_month, last_month_year)
+
+    if len(this) < 3:
+        return {"error": "not_enough_data"}
+
+    this_stats = stats(this)
+    last_stats = stats(last)
+
+    month_name = today.strftime("%B %Y")
+    last_month_name = date(last_month_year, last_month, 1).strftime("%B")
+
+    # Build AI summary using Haiku
+    comparison = ""
+    if last_stats:
+        mood_dir = "up" if this_stats["avg_mood"] > last_stats["avg_mood"] else "down"
+        sleep_dir = "up" if this_stats["avg_sleep"] > last_stats["avg_sleep"] else "down"
+        comparison = f"Compared to {last_month_name}: mood is {mood_dir} ({last_stats['avg_mood']} → {this_stats['avg_mood']}), sleep is {sleep_dir} ({last_stats['avg_sleep']}h → {this_stats['avg_sleep']}h)."
+
+    symptom_lines = ", ".join(f"{v} day(s) of {k.replace('_', ' ')}" for k, v in this_stats["symptom_counts"].items() if v > 0)
+
+    ai_prompt = f"""Write a warm, honest 3-4 sentence summary of this person's {month_name} based on their mental health data.
+Use their numbers naturally. Be caring but real — mention both the good and the hard parts.
+Write like a trusted friend who looked at their data, not a doctor. No bullet points, just a paragraph.
+
+{month_name} data ({this_stats['entry_count']} check-ins):
+- Average mood score: {this_stats['avg_mood']}/10
+- Average sleep: {this_stats['avg_sleep']} hours
+- Average energy: {this_stats['avg_energy']}/10
+- Most common mood state: {this_stats['most_common_state']}
+- Symptoms: {symptom_lines if symptom_lines else 'none flagged'}
+{comparison}"""
+
+    try:
+        ai_result = anthropic_client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=250,
+            messages=[{"role": "user", "content": ai_prompt}]
+        )
+        ai_summary = ai_result.content[0].text
+    except Exception:
+        ai_summary = ""
+
+    return {
+        "month": month_name,
+        "this_month": this_stats,
+        "last_month": last_stats,
+        "ai_summary": ai_summary,
+    }
+
+
 # --- Jasper ---
 
 def build_entry_context(entries):
@@ -488,14 +589,14 @@ def jasper_chat(body: JasperMessage, background_tasks: BackgroundTasks, authoriz
     if crisis_flag or episode_risk == "mixed":
         crisis_note = "\nIf this person seems to be in distress or mentions crisis, gently surface the 988 Suicide & Crisis Lifeline — warmly, like a friend, never clinical."
 
-    system_prompt = f"""You are Jasper, a warm companion built into Cairn — a mental health tracking app for people with bipolar disorder.
+    system_prompt = f"""You are Jasper, a warm companion built into Cairn — a mental health tracking app for people with bipolar disorder. Some users don't have bipolar though.
 
 Your personality: grounded, genuine, caring — like a trusted friend by a campfire. Never clinical, never robotic, never preachy. You listen more than you lecture. Keep responses conversational and warm — you're texting a friend, not writing a report. Short responses are usually better.
 
 Rules:
 - Never diagnose or give medical advice
 - Never be dramatic or alarming
-- Reference the user's real data naturally when it's relevant — but don't lead with data every single message
+- You have their real check-in data — use it naturally, it's what makes you different from other chatbots
 - If the user seems in crisis, gently mention 988 — always warm, never cold{crisis_note}
 
 The user's name is {user_name}.
@@ -510,7 +611,7 @@ What you remember about them:
 
     result = anthropic_client.messages.create(
         model="claude-sonnet-4-6",
-        max_tokens=1000,
+        max_tokens=600,
         system=system_prompt,
         messages=messages
     )
