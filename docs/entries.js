@@ -7,7 +7,7 @@ function exportCSV() {
     const headers = ["Date", "Mood Score", "Sleep (hrs)", "Energy Level", "Elevated", "Disconnected", "Low", "Intrusive Thoughts", "Racing Thoughts", "Irritability", "Social Withdrawal", "Medications Taken", "Notes"];
     const yn = v => v ? "Yes" : "No";
     const rows = allEntries.map(e => [
-        new Date(e.timestamp).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+        new Date(e.timestamp + 'Z').toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
         e.mood_score,
         e.sleep,
         e.energy_level,
@@ -129,12 +129,14 @@ async function loadEntries() {
         allEntries = entries;
 
         container.innerHTML = entries.map(entry => {
-            const [year, month, day] = entry.timestamp.slice(0, 10).split("-");
-            const localDate = `${year}-${month}-${day}T12:00:00`;
-            const date = new Date(localDate).toLocaleDateString("en-US", {
+            const utcDate = new Date(entry.timestamp + 'Z');
+            const date = utcDate.toLocaleDateString("en-US", {
                 month: "long", day: "numeric", year: "numeric"
             });
-            const deleteDate = `${month}/${day}/${year}`;
+            const utcMonth = (utcDate.getUTCMonth() + 1).toString().padStart(2, '0');
+            const utcDay = utcDate.getUTCDate().toString().padStart(2, '0');
+            const utcYear = utcDate.getUTCFullYear();
+            const deleteDate = `${utcMonth}/${utcDay}/${utcYear}`;
 
             const flags = [
                 entry.mania && "Elevated",
