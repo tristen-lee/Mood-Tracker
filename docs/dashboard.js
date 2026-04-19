@@ -39,6 +39,11 @@ const images = [
 const randImg = Math.floor(Math.random() * images.length);
 document.getElementById("dashboard-image").setAttribute("data", images[randImg]);
 
+// Backfill achievements silently on login
+fetch("https://mood-tracker-11bv.onrender.com/achievements", {
+    headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
+}).catch(() => {});
+
 // Streak + crystals
 fetch("https://mood-tracker-11bv.onrender.com/me", {
     headers: { "Authorization": "Bearer " + localStorage.getItem("token") }

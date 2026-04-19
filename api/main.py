@@ -820,6 +820,26 @@ What you remember about them:
 @app.get("/achievements")
 def get_achievements(authorization: Optional[str] = Header(None)):
     user_id = get_user_id(authorization)
+
+    # Backfill: check full history and award anything they qualify for
+    all_entries = fetch_entries(user_id)
+    total_entries = len(all_entries)
+    has_difficult = any(e.get("mania") or e.get("psychosis") or e.get("intrusive_thoughts") for e in all_entries)
+    award_achievements(user_id, total_entries, has_difficult)
+
+    # Also backfill Red Jasper from jasper_message_count
+    conn_j = get_connection()
+    cur_j = conn_j.cursor()
+    cur_j.execute("SELECT COALESCE(jasper_message_count, 0) FROM users WHERE id = %s", (user_id,))
+    jcount = cur_j.fetchone()[0]
+    if jcount >= 5:
+        cur_j.execute(
+            "INSERT INTO user_achievements (user_id, achievement_id) VALUES (%s, 'red_jasper') ON CONFLICT DO NOTHING",
+            (user_id,)
+        )
+        conn_j.commit()
+    conn_j.close()
+
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("SELECT achievement_id, earned_at FROM user_achievements WHERE user_id = %s", (user_id,))
