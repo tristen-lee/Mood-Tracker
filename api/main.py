@@ -122,6 +122,29 @@ def delete_account(authorization: Optional[str] = Header(None)):
     return {"message": "Account deleted."}
 
 
+# --- User profile ---
+
+@app.get("/me")
+def get_me(authorization: Optional[str] = Header(None)):
+    user_id = get_user_id(authorization)
+    all_entries = fetch_entries(user_id)
+    dates = sorted(set(e["timestamp"].date() for e in all_entries))
+    streak = 0
+    if dates:
+        streak = 1
+        for prev, curr in zip(dates, dates[1:]):
+            if curr - prev == timedelta(days=1):
+                streak += 1
+            else:
+                streak = 1
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT crystals FROM users WHERE id = %s", (user_id,))
+    row = cur.fetchone()
+    conn.close()
+    return {"streak": streak, "crystals": row[0] if row else 0}
+
+
 # --- Medication Endpoints ---
 
 @app.get("/medications")
@@ -220,7 +243,52 @@ def create_entry(entry: Entry, authorization: Optional[str] = Header(None)):
     conn.commit()
     conn.close()
     score = combined_score(entry.model_dump())
-    return {"message": "Entry logged successfully", "score": score, "mood_state": mood_state(score)}
+
+    # Award crystals + check streak milestones
+    all_entries = fetch_entries(user_id)
+    dates = sorted(set(e["timestamp"].date() for e in all_entries))
+    streak = 1
+    for prev, curr in zip(dates, dates[1:]):
+        if curr - prev == timedelta(days=1):
+            streak += 1
+        else:
+            streak = 1
+
+    MILESTONES = {3: 3, 7: 7, 14: 14, 30: 30, 60: 60, 100: 100}
+    bonus = MILESTONES.get(streak, 0)
+    crystals_earned = 1 + bonus
+
+    conn2 = get_connection()
+    cur2 = conn2.cursor()
+    cur2.execute(
+        "UPDATE users SET crystals = COALESCE(crystals, 0) + %s WHERE id = %s RETURNING crystals",
+        (crystals_earned, user_id)
+    )
+    new_total = cur2.fetchone()[0]
+    conn2.commit()
+    conn2.close()
+
+    milestone_info = None
+    if bonus > 0:
+        CRYSTAL_LORE = {
+            3:   {"name": "Raw Stone",  "emoji": "🪨", "lore": "Every journey starts with a single stone. You're building something real."},
+            7:   {"name": "Quartz",     "emoji": "💎", "lore": "Clear as quartz. A full week of showing up for yourself."},
+            14:  {"name": "Amethyst",   "emoji": "🔮", "lore": "Amethyst has been used for calm and clarity for centuries. Two weeks in — you're finding yours."},
+            30:  {"name": "Aquamarine", "emoji": "🌊", "lore": "Fluid and steady, like water over stone. Thirty days of knowing yourself better."},
+            60:  {"name": "Moonstone",  "emoji": "✨", "lore": "Moonstone reflects light in the dark. Sixty days — you've been your own light source."},
+            100: {"name": "Obsidian",   "emoji": "🔥", "lore": "Forged in fire, stronger than most. One hundred days. That's not a streak — that's a practice."},
+        }
+        milestone_info = {**CRYSTAL_LORE[streak], "streak": streak, "bonus": bonus}
+
+    return {
+        "message": "Entry logged successfully",
+        "score": score,
+        "mood_state": mood_state(score),
+        "streak": streak,
+        "crystals_earned": crystals_earned,
+        "crystals_total": new_total,
+        "milestone": milestone_info,
+    }
 
 @app.patch("/entries")
 def update_entry(date: str, entry: Entry, authorization: Optional[str] = Header(None)):

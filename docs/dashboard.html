@@ -12,6 +12,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8Z6BBES845"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag("js", new Date());
+      gtag("config", "G-8Z6BBES845");
+    </script>
 </head>
 <body class="centered-layout">
     <header class="site-header">
@@ -19,6 +27,7 @@
     </header>
     <h1><div id="greeting"></div></h1>
     <object id="dashboard-image" type="image/svg+xml" data="assets/woman_meditating.svg"></object>
+    <div id="streak-crystals" class="streak-crystals"></div>
     <div id="episode-warning"></div>
     <h2>What would you like to do today?</h2>
     <nav class="app-nav">
@@ -63,6 +72,6 @@
     <footer>
         <a href="terms.html">Terms</a><span> · </span><a href="attributions.html">Attributions</a><span> · </span><a href="settings.html">Settings</a><span> · </span><a href="help.html">Help</a><span> · </span><button class="footer-logout" onclick="logout()">Log Out</button>
     </footer>
-    <script src="dashboard.js?v=4"></script>
+    <script src="dashboard.js?v=5"></script>
 </body>
 </html>

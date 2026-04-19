@@ -39,6 +39,39 @@ const images = [
 const randImg = Math.floor(Math.random() * images.length);
 document.getElementById("dashboard-image").setAttribute("data", images[randImg]);
 
+// Streak + crystals
+fetch("https://mood-tracker-11bv.onrender.com/me", {
+    headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
+})
+.then(r => r.json())
+.then(data => {
+    if (data.streak > 0 || data.crystals > 0) {
+        const el = document.getElementById("streak-crystals");
+        if (el) el.innerHTML = `🔥 ${data.streak}-day streak &nbsp;·&nbsp; ✨ ${data.crystals} crystals`;
+    }
+})
+.catch(() => {});
+
+// Milestone popup from previous check-in
+const pending = localStorage.getItem("pendingMilestone");
+if (pending) {
+    localStorage.removeItem("pendingMilestone");
+    const m = JSON.parse(pending);
+    const overlay = document.createElement("div");
+    overlay.className = "modal-overlay";
+    overlay.innerHTML = `
+        <div class="milestone-box">
+            <div class="milestone-emoji">${m.emoji}</div>
+            <h2>${m.streak}-Day Streak</h2>
+            <h3>${m.name}</h3>
+            <p class="milestone-lore">${m.lore}</p>
+            <p class="milestone-crystals">+${m.bonus} bonus crystals earned</p>
+            <button class="onboarding-btn" onclick="this.closest('.modal-overlay').remove()">Nice!</button>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+}
+
 fetch("https://mood-tracker-11bv.onrender.com/analytics/episode-risk", {
     headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
 })

@@ -86,6 +86,9 @@ document.getElementById("log-form").addEventListener("submit", async function (e
 
         if (response.ok) {
             const data = await response.json();
+            if (data.milestone) {
+                localStorage.setItem("pendingMilestone", JSON.stringify(data.milestone));
+            }
             showSuccess(data.mood_state);
             form.reset();
             document.getElementById("mood-val").textContent = "5";
