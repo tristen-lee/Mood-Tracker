@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analytics — Mood Tracker</title>
+    <title>Achievements — Cairn</title>
     <link rel="stylesheet" href="style.css">
     <script src="theme.js"></script>
     <link rel="manifest" href="manifest.json">
@@ -33,19 +33,25 @@
         <a href="jasper.html" class="nav-link nav-link--jasper">✦ Jasper</a>
     </nav>
 
-    <h1>How Have You Been?</h1>
+    <h1>Achievements</h1>
 
-    <div class="analytics-stats">
-        <div id="mood-state"></div>
-        <div id="average-score"></div>
-        <div id="streak"></div>
+    <div class="ach-balance-bar">
+        <span id="crystal-balance"></span>
+        <span id="streak-display"></span>
     </div>
-    <div id="chart"></div>
+
+    <h2 class="ach-section-title">Crystal Collection</h2>
+    <p class="ach-section-sub">Earned through your journey — never reset.</p>
+    <div class="ach-grid" id="crystal-grid"></div>
+
+    <h2 class="ach-section-title">Cairn Badges</h2>
+    <p class="ach-section-sub">Earned by building your streak.</p>
+    <div class="ach-grid" id="cairn-grid"></div>
 
     <footer>
         <a href="terms.html">Terms</a><span> · </span><a href="attributions.html">Attributions</a><span> · </span><a href="settings.html">Settings</a><span> · </span><a href="help.html">Help</a>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="analytics.js?v=2"></script>
+
+    <script src="achievements.js?v=1"></script>
 </body>
 </html>

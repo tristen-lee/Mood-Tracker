@@ -86,10 +86,19 @@ const current = localStorage.getItem("theme") || "system";
 document.querySelectorAll(".theme-btn").forEach(btn => {
     if (btn.dataset.value === current) btn.classList.add("active");
     btn.addEventListener("click", () => {
-        localStorage.setItem("theme", btn.dataset.value);
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        const isDark = btn.dataset.value === "dark" || (btn.dataset.value === "system" && prefersDark);
-        document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+        const val = btn.dataset.value;
+        localStorage.setItem("theme", val);
+        let themeValue;
+        if (val === "dark") {
+            themeValue = "dark";
+        } else if (val === "light") {
+            themeValue = "light";
+        } else if (val === "system") {
+            themeValue = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        } else {
+            themeValue = val;
+        }
+        document.documentElement.setAttribute("data-theme", themeValue);
         document.querySelectorAll(".theme-btn").forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
     });

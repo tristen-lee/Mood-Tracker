@@ -1,6 +1,11 @@
 (function () {
     const pref = localStorage.getItem("theme") || "system";
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const isDark = pref === "dark" || (pref === "system" && prefersDark);
-    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+    if (pref === "dark" || pref === "light") {
+        document.documentElement.setAttribute("data-theme", pref);
+    } else if (pref === "system") {
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.setAttribute("data-theme", prefersDark ? "dark" : "light");
+    } else {
+        document.documentElement.setAttribute("data-theme", pref);
+    }
 })();

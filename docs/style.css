@@ -1575,7 +1575,7 @@ footer span {
 
 .streak-crystals {
     font-size: 0.88rem;
-    color: var(--heading);
+    color: #fff;
     margin-bottom: 0.5rem;
 }
 
@@ -2003,4 +2003,117 @@ footer span {
     form {
         padding: 1.25rem;
     }
+}
+
+/* === Achievements page === */
+
+.ach-balance-bar {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--heading);
+    margin-bottom: 1.5rem;
+}
+
+.ach-section-title {
+    font-size: 1.1rem;
+    font-family: "Montserrat Alternates", sans-serif;
+    color: var(--heading);
+    margin: 1.5rem 0 0.25rem;
+    text-align: center;
+}
+
+.ach-section-sub {
+    font-size: 0.82rem;
+    color: var(--text);
+    opacity: 0.6;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.ach-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    width: 100%;
+    padding: 0 1rem;
+}
+
+.ach-card {
+    background: var(--card);
+    border-radius: 1rem;
+    padding: 1.25rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    text-align: center;
+    transition: transform 0.15s;
+}
+
+.ach-card--earned {
+    border: 1.5px solid var(--heading);
+}
+
+.ach-card--locked {
+    opacity: 0.4;
+    filter: grayscale(0.5);
+}
+
+.ach-card--earned:hover {
+    transform: translateY(-2px);
+}
+
+.ach-emoji {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.ach-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--heading);
+    font-family: "Montserrat Alternates", sans-serif;
+}
+
+.ach-desc {
+    font-size: 0.75rem;
+    color: var(--text);
+    opacity: 0.8;
+}
+
+.ach-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--heading);
+    margin-top: 0.25rem;
+}
+
+.ach-locked-label {
+    font-size: 0.7rem;
+    color: var(--text);
+    opacity: 0.5;
+}
+
+.ach-quote {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: var(--heading);
+    opacity: 0.85;
+    margin-bottom: 0.25rem;
+}
+
+/* === Raw Stone theme === */
+
+[data-theme="raw-stone"] {
+    --bg: #1f2422;
+    --card: #2a3028;
+    --heading: #7d9e6a;
+    --text: #c8d4c2;
+    --subtext: #6e8068;
+    --nav-bg: #181e1c;
 }

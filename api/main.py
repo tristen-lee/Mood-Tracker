@@ -59,6 +59,107 @@ class JasperMessage(BaseModel):
     history: Optional[list] = []
 
 
+# --- Achievements ---
+
+ACHIEVEMENTS = {
+    "raw_stone": {
+        "name": "Raw Stone",
+        "emoji": "🪨",
+        "description": "Logged your very first check-in.",
+        "lore": "Every cairn starts with a single stone. You showed up. That's not small — that's a foundation. Raw, unpolished, real. The hardest part is starting, and you already did.",
+        "quote": "Every cairn starts with a single stone.",
+    },
+    "amethyst": {
+        "name": "Amethyst",
+        "emoji": "🟣",
+        "description": "7 total check-ins.",
+        "lore": "A full week of checking in with yourself. Amethyst has been used for centuries to calm a racing mind and bring mental clarity. Seven days of data is seven days of self-knowledge. That matters.",
+        "quote": "Clarity lives on the other side of chaos.",
+    },
+    "rose_quartz": {
+        "name": "Rose Quartz",
+        "emoji": "🩷",
+        "description": "Logged a difficult symptom for the first time.",
+        "lore": "Rose Quartz is the stone of self-acceptance — the gentle reminder that you deserve care, especially on the hard days. You've been giving yourself that care.",
+        "quote": "Showing up for yourself is an act of love.",
+    },
+    "obsidian": {
+        "name": "Obsidian",
+        "emoji": "⚫",
+        "description": "30 total check-ins.",
+        "lore": "Obsidian is formed from volcanic fire. It's the stone of truth — it cuts through the noise and reveals what's really there. Thirty days of honest check-ins takes courage. You have it.",
+        "quote": "A whole month of facing yourself honestly.",
+    },
+    "red_jasper": {
+        "name": "Red Jasper",
+        "emoji": "🔴",
+        "description": "Talked to Jasper 5 times.",
+        "lore": "Red Jasper is known as the stone of endurance — steady, grounding, unwavering. You kept coming back. That consistency is its own kind of strength.",
+        "quote": "Endurance isn't glamorous. It's just showing up, again and again.",
+    },
+    "clear_quartz": {
+        "name": "Clear Quartz",
+        "emoji": "🌟",
+        "description": "100 total check-ins.",
+        "lore": "Clear Quartz amplifies everything around it. A hundred days of data, patterns, and self-awareness amplifies your ability to understand yourself like nothing else can. Stone by stone, you found your way.",
+        "quote": "You built something real.",
+    },
+}
+
+def award_achievements(user_id: int, entry_count: int, has_difficult: bool) -> list:
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT achievement_id FROM user_achievements WHERE user_id = %s", (user_id,))
+    earned = {row[0] for row in cur.fetchall()}
+
+    to_award = []
+    if entry_count >= 1 and "raw_stone" not in earned:
+        to_award.append("raw_stone")
+    if entry_count >= 7 and "amethyst" not in earned:
+        to_award.append("amethyst")
+    if entry_count >= 30 and "obsidian" not in earned:
+        to_award.append("obsidian")
+    if entry_count >= 100 and "clear_quartz" not in earned:
+        to_award.append("clear_quartz")
+    if has_difficult and "rose_quartz" not in earned:
+        to_award.append("rose_quartz")
+
+    for ach_id in to_award:
+        cur.execute(
+            "INSERT INTO user_achievements (user_id, achievement_id) VALUES (%s, %s) ON CONFLICT DO NOTHING",
+            (user_id, ach_id)
+        )
+
+    conn.commit()
+    conn.close()
+    return [{"id": ach_id, **ACHIEVEMENTS[ach_id]} for ach_id in to_award]
+
+def track_jasper_message(user_id: int):
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute(
+            "UPDATE users SET jasper_message_count = COALESCE(jasper_message_count, 0) + 1 WHERE id = %s RETURNING jasper_message_count",
+            (user_id,)
+        )
+        row = cur.fetchone()
+        count = row[0] if row else 0
+        if count >= 5:
+            cur.execute(
+                "SELECT 1 FROM user_achievements WHERE user_id = %s AND achievement_id = 'red_jasper'",
+                (user_id,)
+            )
+            if not cur.fetchone():
+                cur.execute(
+                    "INSERT INTO user_achievements (user_id, achievement_id) VALUES (%s, %s) ON CONFLICT DO NOTHING",
+                    (user_id, "red_jasper")
+                )
+        conn.commit()
+        conn.close()
+    except Exception:
+        pass
+
+
 # --- Auth helper ---
 
 def get_user_id(authorization: Optional[str]) -> int:
@@ -116,6 +217,7 @@ def delete_account(authorization: Optional[str] = Header(None)):
     cur.execute("DELETE FROM entries WHERE user_id = %s", (user_id,))
     cur.execute("DELETE FROM medications WHERE user_id = %s", (user_id,))
     cur.execute("DELETE FROM jasper_summaries WHERE user_id = %s", (user_id,))
+    cur.execute("DELETE FROM user_achievements WHERE user_id = %s", (user_id,))
     cur.execute("DELETE FROM users WHERE id = %s", (user_id,))
     conn.commit()
     conn.close()
@@ -268,17 +370,22 @@ def create_entry(entry: Entry, authorization: Optional[str] = Header(None)):
     conn2.commit()
     conn2.close()
 
+    # Check achievements
+    total_entries = len(all_entries)
+    has_difficult = entry.mania or entry.psychosis or entry.intrusive_thoughts
+    new_achievements = award_achievements(user_id, total_entries, has_difficult)
+
     milestone_info = None
     if bonus > 0:
-        CRYSTAL_LORE = {
-            3:   {"name": "Raw Stone",  "emoji": "🪨", "lore": "Every journey starts with a single stone. You're building something real."},
-            7:   {"name": "Quartz",     "emoji": "💎", "lore": "Clear as quartz. A full week of showing up for yourself."},
-            14:  {"name": "Rose Quartz", "emoji": "🌸", "lore": "Rose quartz is the stone of self-compassion. Two weeks of showing up for yourself — that's real."},
-            30:  {"name": "Aquamarine", "emoji": "🌊", "lore": "Fluid and steady, like water over stone. Thirty days of knowing yourself better."},
-            60:  {"name": "Moonstone",  "emoji": "✨", "lore": "Moonstone reflects light in the dark. Sixty days — you've been your own light source."},
-            100: {"name": "Obsidian",   "emoji": "🔥", "lore": "Forged in fire, stronger than most. One hundred days. That's not a streak — that's a practice."},
+        CAIRN_LORE = {
+            3:   {"name": "Pebble",        "emoji": "🪨",   "lore": "Three days in a row. Every cairn starts with a single stone — you just laid yours."},
+            7:   {"name": "Stone",         "emoji": "🪨🪨", "lore": "Seven days. You're building something solid."},
+            14:  {"name": "Rock",          "emoji": "🗿",   "lore": "Two weeks of showing up. The cairn is taking shape."},
+            30:  {"name": "Boulder",       "emoji": "⛰️",  "lore": "Thirty days. A boulder of consistency. That's not easy — and you did it."},
+            60:  {"name": "Cairn",         "emoji": "🏔️",  "lore": "Sixty days. You've built a cairn. Stone by stone, day by day."},
+            100: {"name": "Ancient Cairn", "emoji": "✨",   "lore": "One hundred days. This cairn will stand for a long time. You built something real."},
         }
-        milestone_info = {**CRYSTAL_LORE[streak], "streak": streak, "bonus": bonus}
+        milestone_info = {**CAIRN_LORE[streak], "streak": streak, "bonus": bonus}
 
     return {
         "message": "Entry logged successfully",
@@ -288,6 +395,7 @@ def create_entry(entry: Entry, authorization: Optional[str] = Header(None)):
         "crystals_earned": crystals_earned,
         "crystals_total": new_total,
         "milestone": milestone_info,
+        "new_achievements": new_achievements,
     }
 
 @app.patch("/entries")
@@ -703,4 +811,27 @@ What you remember about them:
 
     response_text = result.content[0].text
     background_tasks.add_task(update_summary, user_id, body.message, response_text, old_summary)
+    background_tasks.add_task(track_jasper_message, user_id)
     return {"response": response_text}
+
+
+# --- Achievements endpoint ---
+
+@app.get("/achievements")
+def get_achievements(authorization: Optional[str] = Header(None)):
+    user_id = get_user_id(authorization)
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT achievement_id, earned_at FROM user_achievements WHERE user_id = %s", (user_id,))
+    rows = cur.fetchall()
+    conn.close()
+    earned = {row[0]: row[1].isoformat() for row in rows}
+    return [
+        {
+            "id": ach_id,
+            **ach,
+            "earned": ach_id in earned,
+            "earned_at": earned.get(ach_id),
+        }
+        for ach_id, ach in ACHIEVEMENTS.items()
+    ]

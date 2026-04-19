@@ -89,6 +89,9 @@ document.getElementById("log-form").addEventListener("submit", async function (e
             if (data.milestone) {
                 localStorage.setItem("pendingMilestone", JSON.stringify(data.milestone));
             }
+            if (data.new_achievements && data.new_achievements.length > 0) {
+                localStorage.setItem("pendingAchievements", JSON.stringify(data.new_achievements));
+            }
             showSuccess(data.mood_state);
             form.reset();
             document.getElementById("mood-val").textContent = "5";

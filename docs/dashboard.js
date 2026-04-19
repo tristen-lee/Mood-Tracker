@@ -52,6 +52,29 @@ fetch("https://mood-tracker-11bv.onrender.com/me", {
 })
 .catch(() => {});
 
+// Achievement popup from previous check-in
+const pendingAch = localStorage.getItem("pendingAchievements");
+if (pendingAch) {
+    localStorage.removeItem("pendingAchievements");
+    JSON.parse(pendingAch).forEach((ach, i) => {
+        setTimeout(() => {
+            const overlay = document.createElement("div");
+            overlay.className = "modal-overlay";
+            overlay.innerHTML = `
+                <div class="milestone-box">
+                    <div class="milestone-emoji">${ach.emoji}</div>
+                    <p class="ach-quote">"${ach.quote}"</p>
+                    <h2>Achievement Unlocked</h2>
+                    <h3>${ach.name}</h3>
+                    <p class="milestone-lore">${ach.lore}</p>
+                    <button class="onboarding-btn" onclick="this.closest('.modal-overlay').remove()">Nice!</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }, i * 400);
+    });
+}
+
 // Milestone popup from previous check-in
 const pending = localStorage.getItem("pendingMilestone");
 if (pending) {
