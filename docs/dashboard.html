@@ -22,10 +22,11 @@
     </script>
 </head>
 <body class="centered-layout">
-    <header class="site-header">
-        <a href="dashboard.html" class="logo-link"><img src="assets/cairn.svg" alt="Cairn" class="logo"></a>
-    </header>
-    <h1><div id="greeting"></div></h1>
+    <div class="dashboard-top-bar">
+        <img src="assets/cairn.svg" alt="Cairn" class="logo">
+        <div id="greeting" class="dashboard-greeting"></div>
+        <a href="store.html" class="store-btn">🛍 Store</a>
+    </div>
     <object id="dashboard-image" type="image/svg+xml" data="assets/woman_meditating.svg"></object>
     <div id="streak-crystals" class="streak-crystals"></div>
     <div id="episode-warning"></div>
@@ -34,7 +35,7 @@
         <a href="log.html" class="nav-btn">✏️ Check In</a>
         <a href="entries.html" class="nav-btn">📋 My Entries</a>
         <a href="analytics.html" class="nav-btn">📈 Analytics</a>
-        <a href="summary.html" class="nav-btn">📅 Monthly</a>
+        <a href="summary.html" class="nav-btn">📅 Monthly Summary</a>
         <a href="jasper.html" class="jasper-dashboard-btn">✦ Talk to Jasper</a>
     </nav>
 

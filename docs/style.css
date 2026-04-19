@@ -1535,10 +1535,47 @@ footer span {
 
 /* === Streak + crystals === */
 
+.dashboard-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto 0.5rem;
+    padding: 0 0.25rem;
+}
+
+.dashboard-greeting {
+    flex: 1;
+    text-align: left;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--heading);
+    font-family: "Montserrat Alternates", sans-serif;
+    padding: 0 0.75rem;
+}
+
+.store-btn {
+    background: linear-gradient(135deg, #a78bfa, #7c3aed);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 0.75rem;
+    padding: 0.5rem 1rem;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: opacity 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.store-btn:hover {
+    opacity: 0.85;
+}
+
 .streak-crystals {
     font-size: 0.88rem;
-    color: var(--text);
-    opacity: 0.6;
+    color: var(--heading);
     margin-bottom: 0.5rem;
 }
 

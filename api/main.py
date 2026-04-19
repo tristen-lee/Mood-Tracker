@@ -273,7 +273,7 @@ def create_entry(entry: Entry, authorization: Optional[str] = Header(None)):
         CRYSTAL_LORE = {
             3:   {"name": "Raw Stone",  "emoji": "🪨", "lore": "Every journey starts with a single stone. You're building something real."},
             7:   {"name": "Quartz",     "emoji": "💎", "lore": "Clear as quartz. A full week of showing up for yourself."},
-            14:  {"name": "Amethyst",   "emoji": "🔮", "lore": "Amethyst has been used for calm and clarity for centuries. Two weeks in — you're finding yours."},
+            14:  {"name": "Rose Quartz", "emoji": "🌸", "lore": "Rose quartz is the stone of self-compassion. Two weeks of showing up for yourself — that's real."},
             30:  {"name": "Aquamarine", "emoji": "🌊", "lore": "Fluid and steady, like water over stone. Thirty days of knowing yourself better."},
             60:  {"name": "Moonstone",  "emoji": "✨", "lore": "Moonstone reflects light in the dark. Sixty days — you've been your own light source."},
             100: {"name": "Obsidian",   "emoji": "🔥", "lore": "Forged in fire, stronger than most. One hundred days. That's not a streak — that's a practice."},
