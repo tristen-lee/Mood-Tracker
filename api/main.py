@@ -484,7 +484,7 @@ def monthly_summary(authorization: Optional[str] = Header(None)):
 
     ai_prompt = f"""Write a warm, honest 3-4 sentence summary of this person's {month_name} based on their mental health data.
 Use their numbers naturally. Be caring but real — mention both the good and the hard parts.
-Write like a trusted friend who looked at their data, not a doctor. No bullet points, just a paragraph.
+Write like a trusted friend who looked at their data, not a doctor. Plain text only — no markdown, no headings, no bullet points. Just a paragraph.
 
 {month_name} data ({this_stats['entry_count']} check-ins):
 - Average mood score: {this_stats['avg_mood']}/10
@@ -500,7 +500,7 @@ Write like a trusted friend who looked at their data, not a doctor. No bullet po
             max_tokens=250,
             messages=[{"role": "user", "content": ai_prompt}]
         )
-        ai_summary = ai_result.content[0].text
+        ai_summary = "\n".join(l for l in ai_result.content[0].text.splitlines() if not l.startswith("#")).strip()
     except Exception:
         ai_summary = ""
 
