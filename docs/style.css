@@ -1079,6 +1079,29 @@ footer span {
     max-width: 480px;
 }
 
+.settings-card--danger {
+    border: 1px solid var(--heading);
+}
+
+.delete-account-btn {
+    background: none;
+    border: 1px solid var(--heading);
+    color: var(--heading);
+    border-radius: 0.5rem;
+    padding: 0.6rem 1.25rem;
+    font-family: "Quicksand", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background 0.15s, color 0.15s;
+}
+
+.delete-account-btn:hover {
+    background: var(--heading);
+    color: #fff;
+}
+
 .settings-card h2 {
     font-size: 1rem;
     font-weight: 600;

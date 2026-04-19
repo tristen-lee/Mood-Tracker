@@ -61,6 +61,26 @@ document.getElementById("med-add").addEventListener("click", async () => {
 
 loadMeds();
 
+// Account deletion
+document.getElementById("delete-account-btn").addEventListener("click", async () => {
+    const first = confirm("Are you sure you want to delete your account? All your entries, medications, and data will be permanently erased.");
+    if (!first) return;
+    const second = confirm("This cannot be undone. Delete everything?");
+    if (!second) return;
+
+    const res = await fetch(`${API}/account`, {
+        method: "DELETE",
+        headers: { "Authorization": "Bearer " + token() }
+    });
+
+    if (res.ok) {
+        localStorage.clear();
+        window.location.href = "home.html";
+    } else {
+        alert("Something went wrong. Try again.");
+    }
+});
+
 // Theme
 const current = localStorage.getItem("theme") || "system";
 document.querySelectorAll(".theme-btn").forEach(btn => {

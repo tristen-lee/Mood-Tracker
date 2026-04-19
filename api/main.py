@@ -105,6 +105,23 @@ def login(body: LoginBody):
     return {"token": token, "name": row[1]}
 
 
+# --- Account ---
+
+@app.delete("/account")
+def delete_account(authorization: Optional[str] = Header(None)):
+    user_id = get_user_id(authorization)
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM entry_medications WHERE user_id = %s", (user_id,))
+    cur.execute("DELETE FROM entries WHERE user_id = %s", (user_id,))
+    cur.execute("DELETE FROM medications WHERE user_id = %s", (user_id,))
+    cur.execute("DELETE FROM jasper_summaries WHERE user_id = %s", (user_id,))
+    cur.execute("DELETE FROM users WHERE id = %s", (user_id,))
+    conn.commit()
+    conn.close()
+    return {"message": "Account deleted."}
+
+
 # --- Medication Endpoints ---
 
 @app.get("/medications")
