@@ -3,6 +3,7 @@
     --background: #31383f;
     --text: #F5F0F0;
     --heading: #E16F7C;
+    --subheading: #F5F0F0;
     --accent: #87BBA2;
     --card: #3d444c;
     --border: #555;
@@ -16,6 +17,7 @@
     --background: #f4eeeb;
     --text: #2e3338;
     --heading: #c45a6a;
+    --subheading: #2e3338;
     --accent: #4d9677;
     --card: #e8e2de;
     --border: #bbb;
@@ -100,16 +102,17 @@ nav a:hover {
 h1, h2 {
     font-family: "Montserrat Alternates", sans-serif;
     font-weight: 500;
-    color: var(--heading);
     animation: fadeUp 0.5s ease forwards;
 }
 
 h1 {
+    color: var(--heading);
     font-size: 2rem;
     margin-bottom: 0.5rem;
 }
 
 h2 {
+    color: var(--subheading, var(--text));
     font-size: 1.25rem;
     margin-bottom: 0.25rem;
 }
@@ -2204,6 +2207,7 @@ footer span {
     --bg: #2d1f26;
     --card: #3d2a33;
     --heading: #f4a7b9;
+    --subheading: #f0dde4;
     --text: #f0dde4;
     --subtext: #b8899a;
     --nav-bg: #231720;
@@ -2215,6 +2219,7 @@ footer span {
     --bg: #1a1428;
     --card: #251d38;
     --heading: #c084fc;
+    --subheading: #e9d5ff;
     --text: #e9d5ff;
     --subtext: #9b6dbd;
     --nav-bg: #120f1e;
@@ -2226,6 +2231,7 @@ footer span {
     --bg: #0a0a0a;
     --card: #111111;
     --heading: #22d3c8;
+    --subheading: #f0f0f0;
     --text: #f0f0f0;
     --subtext: #666666;
     --nav-bg: #050505;
@@ -2237,6 +2243,7 @@ footer span {
     --bg: #1f2422;
     --card: #2a3028;
     --heading: #7d9e6a;
+    --subheading: #c8d4c2;
     --text: #c8d4c2;
     --subtext: #6e8068;
     --nav-bg: #181e1c;

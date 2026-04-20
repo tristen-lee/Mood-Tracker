@@ -33,7 +33,7 @@ async function load() {
         card.innerHTML = `
             <div class="ach-emoji">${ach.emoji}</div>
             <div class="ach-name">${ach.name}</div>
-            <div class="ach-desc">${ach.earned ? ach.description : "Keep going to unlock this."}</div>
+            <div class="ach-desc">${ach.description}</div>
             ${ach.earned ? `<div class="ach-badge">✓ Earned</div>` : `<div class="ach-locked-label">Locked</div>`}
         `;
         if (ach.earned) {
