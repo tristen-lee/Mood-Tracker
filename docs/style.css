@@ -772,7 +772,9 @@ footer a {
 }
 
 .nav-btn {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 1rem;
     background-color: var(--card);
     color: var(--text);
