@@ -68,8 +68,9 @@ async function load() {
 const THEMES = [
     { id: "dark",      name: "Dark",        emoji: "🌑", description: "Default dark mode.",         unlocked: true },
     { id: "light",     name: "Light",       emoji: "☀️", description: "Default light mode.",        unlocked: true },
-    { id: "raw-stone", name: "Raw Stone",   emoji: "🪨", description: "Mossy stone. Earn the Raw Stone crystal to unlock.", unlocked: false, achievement: "raw_stone" },
-    { id: "amethyst",  name: "Amethyst",    emoji: "🟣", description: "Coming soon.",               unlocked: false, comingSoon: true },
+    { id: "raw-stone",   name: "Raw Stone",   emoji: "🪨", description: "Earn the Raw Stone crystal to unlock.", unlocked: false, achievement: "raw_stone" },
+    { id: "rose-quartz", name: "Rose Quartz", emoji: "🩷", description: "Earn the Rose Quartz crystal to unlock.", unlocked: false, achievement: "rose_quartz" },
+    { id: "amethyst",    name: "Amethyst",    emoji: "🟣", description: "Coming soon.",              unlocked: false, comingSoon: true },
     { id: "obsidian",  name: "Obsidian",    emoji: "⚫", description: "Coming soon.",               unlocked: false, comingSoon: true },
     { id: "sunset",    name: "Sunset",      emoji: "🌅", description: "Coming soon to the shop.",   unlocked: false, comingSoon: true },
     { id: "ocean",     name: "Ocean",       emoji: "🌊", description: "Coming soon to the shop.",   unlocked: false, comingSoon: true },

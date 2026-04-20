@@ -2191,6 +2191,17 @@ footer span {
     flex-shrink: 0;
 }
 
+/* === Rose Quartz theme === */
+
+[data-theme="rose-quartz"] {
+    --bg: #2d1f26;
+    --card: #3d2a33;
+    --heading: #f4a7b9;
+    --text: #f0dde4;
+    --subtext: #b8899a;
+    --nav-bg: #231720;
+}
+
 /* === Raw Stone theme === */
 
 [data-theme="raw-stone"] {
