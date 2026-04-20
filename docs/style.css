@@ -2220,6 +2220,17 @@ footer span {
     --nav-bg: #120f1e;
 }
 
+/* === Obsidian theme === */
+
+[data-theme="obsidian"] {
+    --bg: #0a0a0a;
+    --card: #111111;
+    --heading: #22d3c8;
+    --text: #f0f0f0;
+    --subtext: #666666;
+    --nav-bg: #050505;
+}
+
 /* === Raw Stone theme === */
 
 [data-theme="raw-stone"] {
