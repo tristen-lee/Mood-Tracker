@@ -2106,6 +2106,73 @@ footer span {
     margin-bottom: 0.25rem;
 }
 
+/* === Settings FAB === */
+
+.settings-fab {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: var(--card);
+    border: 1.5px solid var(--heading);
+    color: var(--heading);
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    transition: transform 0.15s, opacity 0.15s;
+    z-index: 100;
+}
+
+.settings-fab:hover {
+    transform: scale(1.08);
+    opacity: 0.9;
+}
+
+/* === What's New banner === */
+
+.whats-new-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    background: var(--heading);
+    color: #fff;
+    padding: 0.6rem 1rem;
+}
+
+.whats-new-banner-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 600px;
+    margin: 0 auto;
+    font-size: 0.9rem;
+    font-weight: 600;
+    gap: 1rem;
+}
+
+.whats-new-banner-content a {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.whats-new-banner-close {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0;
+    opacity: 0.8;
+    flex-shrink: 0;
+}
+
 /* === Raw Stone theme === */
 
 [data-theme="raw-stone"] {

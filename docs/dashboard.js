@@ -39,6 +39,15 @@ const images = [
 const randImg = Math.floor(Math.random() * images.length);
 document.getElementById("dashboard-image").setAttribute("data", images[randImg]);
 
+// What's New banner — achievements + themes
+if (!localStorage.getItem("achievementsBannerSeen")) {
+    document.getElementById("whats-new-banner").classList.remove("hidden");
+}
+function dismissBanner() {
+    localStorage.setItem("achievementsBannerSeen", "true");
+    document.getElementById("whats-new-banner").classList.add("hidden");
+}
+
 // Backfill achievements silently on login
 fetch("https://mood-tracker-11bv.onrender.com/achievements", {
     headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
