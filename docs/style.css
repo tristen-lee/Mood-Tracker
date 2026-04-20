@@ -2202,6 +2202,17 @@ footer span {
     --nav-bg: #231720;
 }
 
+/* === Amethyst theme === */
+
+[data-theme="amethyst"] {
+    --bg: #1a1428;
+    --card: #251d38;
+    --heading: #c084fc;
+    --text: #e9d5ff;
+    --subtext: #9b6dbd;
+    --nav-bg: #120f1e;
+}
+
 /* === Raw Stone theme === */
 
 [data-theme="raw-stone"] {
