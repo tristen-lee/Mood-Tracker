@@ -1546,13 +1546,12 @@ footer span {
 }
 
 .dashboard-greeting {
-    flex: 1;
-    text-align: left;
     font-size: 1.35rem;
     font-weight: 600;
     color: var(--heading);
     font-family: "Montserrat Alternates", sans-serif;
-    padding: 0 0.75rem;
+    text-align: center;
+    margin: 0.25rem 0 0.75rem;
 }
 
 .store-btn {
