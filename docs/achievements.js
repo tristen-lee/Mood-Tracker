@@ -42,6 +42,10 @@ async function load() {
         crystalGrid.appendChild(card);
     });
 
+    // Themes
+    const earnedSet = new Set(achievements.filter(a => a.earned).map(a => a.id));
+    renderThemes(earnedSet);
+
     // Cairn badges
     const cairnGrid = document.getElementById("cairn-grid");
     CAIRN_BADGES.forEach(badge => {
@@ -58,6 +62,49 @@ async function load() {
             }
         `;
         cairnGrid.appendChild(card);
+    });
+}
+
+const THEMES = [
+    { id: "dark",      name: "Dark",        emoji: "🌑", description: "Default dark mode.",         unlocked: true },
+    { id: "light",     name: "Light",       emoji: "☀️", description: "Default light mode.",        unlocked: true },
+    { id: "raw-stone", name: "Raw Stone",   emoji: "🪨", description: "Mossy stone. Earn the Raw Stone crystal to unlock.", unlocked: false, achievement: "raw_stone" },
+    { id: "amethyst",  name: "Amethyst",    emoji: "🟣", description: "Coming soon.",               unlocked: false, comingSoon: true },
+    { id: "obsidian",  name: "Obsidian",    emoji: "⚫", description: "Coming soon.",               unlocked: false, comingSoon: true },
+    { id: "sunset",    name: "Sunset",      emoji: "🌅", description: "Coming soon to the shop.",   unlocked: false, comingSoon: true },
+    { id: "ocean",     name: "Ocean",       emoji: "🌊", description: "Coming soon to the shop.",   unlocked: false, comingSoon: true },
+    { id: "forest",    name: "Forest",      emoji: "🌲", description: "Coming soon to the shop.",   unlocked: false, comingSoon: true },
+];
+
+function renderThemes(earnedAchievements) {
+    const current = localStorage.getItem("theme") || "system";
+    const themesGrid = document.getElementById("themes-grid");
+
+    THEMES.forEach(theme => {
+        const isUnlocked = theme.unlocked || earnedAchievements.has(theme.achievement);
+        const isActive = current === theme.id;
+
+        const card = document.createElement("div");
+        card.className = `ach-card ${isUnlocked ? "ach-card--earned" : "ach-card--locked"}`;
+        card.innerHTML = `
+            <div class="ach-emoji">${theme.emoji}</div>
+            <div class="ach-name">${theme.name}</div>
+            <div class="ach-desc">${theme.description}</div>
+            ${isActive ? `<div class="ach-badge">✓ Active</div>` :
+              isUnlocked ? `<button class="theme-apply-btn" data-theme="${theme.id}">Apply</button>` :
+              theme.comingSoon ? `<div class="ach-locked-label">Coming soon</div>` :
+              `<div class="ach-locked-label">Locked</div>`}
+        `;
+        themesGrid.appendChild(card);
+    });
+
+    themesGrid.addEventListener("click", e => {
+        if (!e.target.classList.contains("theme-apply-btn")) return;
+        const val = e.target.dataset.theme;
+        localStorage.setItem("theme", val);
+        document.documentElement.setAttribute("data-theme", val);
+        themesGrid.innerHTML = "";
+        renderThemes(earnedAchievements);
     });
 }
 

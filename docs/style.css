@@ -2098,6 +2098,24 @@ footer span {
     opacity: 0.5;
 }
 
+.theme-apply-btn {
+    margin-top: 0.25rem;
+    background: var(--heading);
+    color: #fff;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: "Quicksand", sans-serif;
+    transition: opacity 0.15s;
+}
+
+.theme-apply-btn:hover {
+    opacity: 0.85;
+}
+
 .ach-quote {
     font-size: 0.85rem;
     font-style: italic;
