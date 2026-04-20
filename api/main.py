@@ -821,13 +821,20 @@ What you remember about them:
 def get_achievements(authorization: Optional[str] = Header(None)):
     user_id = get_user_id(authorization)
 
-    # Backfill: check full history and award anything they qualify for
+    # Snapshot before backfill
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT achievement_id FROM user_achievements WHERE user_id = %s", (user_id,))
+    before = {row[0] for row in cur.fetchall()}
+    conn.close()
+
+    # Backfill entry-based achievements
     all_entries = fetch_entries(user_id)
     total_entries = len(all_entries)
     has_difficult = any(e.get("mania") or e.get("psychosis") or e.get("intrusive_thoughts") for e in all_entries)
     award_achievements(user_id, total_entries, has_difficult)
 
-    # Also backfill Red Jasper from jasper_message_count
+    # Backfill Red Jasper from jasper_message_count
     conn_j = get_connection()
     cur_j = conn_j.cursor()
     cur_j.execute("SELECT COALESCE(jasper_message_count, 0) FROM users WHERE id = %s", (user_id,))
@@ -837,21 +844,27 @@ def get_achievements(authorization: Optional[str] = Header(None)):
             "INSERT INTO user_achievements (user_id, achievement_id) VALUES (%s, 'red_jasper') ON CONFLICT DO NOTHING",
             (user_id,)
         )
-        conn_j.commit()
+        cur_j.commit()
     conn_j.close()
 
+    # Snapshot after backfill — diff tells us what was just awarded
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("SELECT achievement_id, earned_at FROM user_achievements WHERE user_id = %s", (user_id,))
     rows = cur.fetchall()
     conn.close()
     earned = {row[0]: row[1].isoformat() for row in rows}
-    return [
-        {
-            "id": ach_id,
-            **ach,
-            "earned": ach_id in earned,
-            "earned_at": earned.get(ach_id),
-        }
-        for ach_id, ach in ACHIEVEMENTS.items()
-    ]
+    newly_awarded = [ach_id for ach_id in earned if ach_id not in before]
+
+    return {
+        "achievements": [
+            {
+                "id": ach_id,
+                **ach,
+                "earned": ach_id in earned,
+                "earned_at": earned.get(ach_id),
+            }
+            for ach_id, ach in ACHIEVEMENTS.items()
+        ],
+        "newly_awarded": [{"id": ach_id, **ACHIEVEMENTS[ach_id]} for ach_id in newly_awarded],
+    }

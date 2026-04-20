@@ -48,10 +48,19 @@ function dismissBanner() {
     document.getElementById("whats-new-banner").classList.add("hidden");
 }
 
-// Backfill achievements silently on login
+// Backfill achievements on login — show popup for anything newly awarded
 fetch("https://mood-tracker-11bv.onrender.com/achievements", {
     headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
-}).catch(() => {});
+})
+.then(r => r.json())
+.then(data => {
+    if (data.newly_awarded && data.newly_awarded.length > 0) {
+        data.newly_awarded.forEach((ach, i) => {
+            setTimeout(() => showAchievementPopup(ach), i * 400);
+        });
+    }
+})
+.catch(() => {});
 
 // Streak + crystals
 fetch("https://mood-tracker-11bv.onrender.com/me", {
@@ -66,26 +75,28 @@ fetch("https://mood-tracker-11bv.onrender.com/me", {
 })
 .catch(() => {});
 
+function showAchievementPopup(ach) {
+    const overlay = document.createElement("div");
+    overlay.className = "modal-overlay";
+    overlay.innerHTML = `
+        <div class="milestone-box">
+            <div class="milestone-emoji">${ach.emoji}</div>
+            <p class="ach-quote">"${ach.quote}"</p>
+            <h2>Achievement Unlocked</h2>
+            <h3>${ach.name}</h3>
+            <p class="milestone-lore">${ach.lore}</p>
+            <button class="onboarding-btn" onclick="this.closest('.modal-overlay').remove()">Nice!</button>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+}
+
 // Achievement popup from previous check-in
 const pendingAch = localStorage.getItem("pendingAchievements");
 if (pendingAch) {
     localStorage.removeItem("pendingAchievements");
     JSON.parse(pendingAch).forEach((ach, i) => {
-        setTimeout(() => {
-            const overlay = document.createElement("div");
-            overlay.className = "modal-overlay";
-            overlay.innerHTML = `
-                <div class="milestone-box">
-                    <div class="milestone-emoji">${ach.emoji}</div>
-                    <p class="ach-quote">"${ach.quote}"</p>
-                    <h2>Achievement Unlocked</h2>
-                    <h3>${ach.name}</h3>
-                    <p class="milestone-lore">${ach.lore}</p>
-                    <button class="onboarding-btn" onclick="this.closest('.modal-overlay').remove()">Nice!</button>
-                </div>
-            `;
-            document.body.appendChild(overlay);
-        }, i * 400);
+        setTimeout(() => showAchievementPopup(ach), i * 400);
     });
 }
 

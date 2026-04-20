@@ -17,7 +17,8 @@ async function load() {
         fetch(`${API}/me`,           { headers: { Authorization: `Bearer ${token}` } }),
     ]);
 
-    const achievements = await achRes.json();
+    const achData = await achRes.json();
+    const achievements = achData.achievements;
     const me = await meRes.json();
     const streak = me.streak || 0;
 
