@@ -1445,6 +1445,11 @@ footer span {
     opacity: 1;
 }
 
+.nav-btn--wide {
+    grid-column: 1 / -1;
+    text-align: center;
+}
+
 .nav-btn--jasper {
     border: 1.5px solid var(--heading);
     color: var(--heading);
@@ -1541,7 +1546,7 @@ footer span {
     justify-content: space-between;
     width: 100%;
     max-width: 480px;
-    margin: 0 auto 0.5rem;
+    margin: 0 auto 1.5rem;
     padding: 0 0.25rem;
 }
 
