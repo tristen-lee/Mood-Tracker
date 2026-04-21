@@ -2270,6 +2270,18 @@ footer span {
     --nav-bg: #050505;
 }
 
+/* === Red Jasper theme === */
+
+[data-theme="red-jasper"] {
+    --bg: #2a1a14;
+    --card: #3a2318;
+    --heading: #c0622a;
+    --subheading: #f5ede8;
+    --text: #f5ede8;
+    --subtext: #a07060;
+    --nav-bg: #1e1210;
+}
+
 /* === Raw Stone theme === */
 
 [data-theme="raw-stone"] {
