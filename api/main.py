@@ -508,11 +508,14 @@ def get_by_date(days: int = 30, authorization: Optional[str] = Header(None)):
     return [e for e in data if e["timestamp"].date() >= cutoff]
 
 @app.get("/analytics/by-day")
-def get_by_day(authorization: Optional[str] = Header(None)):
+def get_by_day(days: int = 0, authorization: Optional[str] = Header(None)):
     user_id = get_user_id(authorization)
     data = fetch_entries(user_id)
     if not data:
         return []
+    if days > 0:
+        cutoff = datetime.now().date() - timedelta(days=days)
+        data = [e for e in data if e["timestamp"].date() >= cutoff]
     day_scores = defaultdict(list)
     for e in data:
         day = e["timestamp"].strftime("%A")
@@ -524,24 +527,33 @@ def get_by_day(authorization: Optional[str] = Header(None)):
     ]
 
 @app.get("/analytics/mood-distribution")
-def get_mood_distribution(authorization: Optional[str] = Header(None)):
+def get_mood_distribution(days: int = 0, authorization: Optional[str] = Header(None)):
     user_id = get_user_id(authorization)
     data = fetch_entries(user_id)
     if not data:
         return []
+    if days > 0:
+        cutoff = datetime.now().date() - timedelta(days=days)
+        data = [e for e in data if e["timestamp"].date() >= cutoff]
     counts = Counter(mood_state(combined_score(e)) for e in data)
     return [{"state": state, "count": count} for state, count in counts.items()]
 
 @app.get("/analytics/sleep-vs-mood")
-def get_sleep_vs_mood(authorization: Optional[str] = Header(None)):
+def get_sleep_vs_mood(days: int = 0, authorization: Optional[str] = Header(None)):
     user_id = get_user_id(authorization)
     data = fetch_entries(user_id)
+    if days > 0:
+        cutoff = datetime.now().date() - timedelta(days=days)
+        data = [e for e in data if e["timestamp"].date() >= cutoff]
     return [{"sleep": e["sleep"], "score": combined_score(e)} for e in data]
 
 @app.get("/analytics/sleep-over-time")
-def get_sleep_over_time(authorization: Optional[str] = Header(None)):
+def get_sleep_over_time(days: int = 0, authorization: Optional[str] = Header(None)):
     user_id = get_user_id(authorization)
     data = fetch_entries(user_id)
+    if days > 0:
+        cutoff = datetime.now().date() - timedelta(days=days)
+        data = [e for e in data if e["timestamp"].date() >= cutoff]
     return [{"timestamp": e["timestamp"].isoformat(), "sleep": e["sleep"]} for e in data]
 
 @app.get("/analytics/episode-risk")

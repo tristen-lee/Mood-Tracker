@@ -19,8 +19,24 @@ const STATE_COLORS = {
     "Suicidal":  "#d9534f",
 };
 
+const FILTERS = [
+    { label: "7D",    days: 7 },
+    { label: "14D",   days: 14 },
+    { label: "1M",    days: 30 },
+    { label: "3M",    days: 90 },
+    { label: "6M",    days: 180 },
+    { label: "1Y",    days: 365 },
+    { label: "All",   days: 0 },
+];
+
+let currentDays = 30;
+const charts = {};
+const API = "https://mood-tracker-11bv.onrender.com";
+const token = () => localStorage.getItem("token");
+
 function makeChart(id, type, data, options) {
-    return new Chart(document.getElementById(id), { type, data, options });
+    if (charts[id]) charts[id].destroy();
+    charts[id] = new Chart(document.getElementById(id), { type, data, options });
 }
 
 function baseOptions(title) {
@@ -52,49 +68,56 @@ function wrap(id) {
 }
 
 function formatDate(ts) {
-    return new Date(ts).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    return new Date(ts + (ts.includes("T") ? "" : "Z")).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function renderFilterBar() {
+    const bar = document.getElementById("filter-bar");
+    bar.innerHTML = FILTERS.map(f => `
+        <button class="filter-btn ${f.days === currentDays ? "filter-btn--active" : ""}" data-days="${f.days}">
+            ${f.label}
+        </button>
+    `).join("");
+    bar.querySelectorAll(".filter-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            currentDays = parseInt(btn.dataset.days);
+            renderFilterBar();
+            loadCharts();
+        });
+    });
+}
+
+function q(days) {
+    return days > 0 ? `?days=${days}` : "";
 }
 
 async function loadAnalytics() {
     try {
-        const [recentRes, avgRes, streakRes, byDateRes, byDayRes, distRes, scatterRes, sleepRes] = await Promise.all([
-            fetch("https://mood-tracker-11bv.onrender.com/analytics", { headers: { "Authorization": "Bearer " + localStorage.getItem("token") } }),
-            fetch("https://mood-tracker-11bv.onrender.com/analytics/average", { headers: { "Authorization": "Bearer " + localStorage.getItem("token") } }),
-            fetch("https://mood-tracker-11bv.onrender.com/analytics/streak", { headers: { "Authorization": "Bearer " + localStorage.getItem("token") } }),
-            fetch("https://mood-tracker-11bv.onrender.com/analytics/by-date?days=30", { headers: { "Authorization": "Bearer " + localStorage.getItem("token") } }),
-            fetch("https://mood-tracker-11bv.onrender.com/analytics/by-day", { headers: { "Authorization": "Bearer " + localStorage.getItem("token") } }),
-            fetch("https://mood-tracker-11bv.onrender.com/analytics/mood-distribution", { headers: { "Authorization": "Bearer " + localStorage.getItem("token") } }),
-            fetch("https://mood-tracker-11bv.onrender.com/analytics/sleep-vs-mood", { headers: { "Authorization": "Bearer " + localStorage.getItem("token") } }),
-            fetch("https://mood-tracker-11bv.onrender.com/analytics/sleep-over-time", { headers: { "Authorization": "Bearer " + localStorage.getItem("token") } }),
+        const [recentRes, avgRes, streakRes] = await Promise.all([
+            fetch(`${API}/analytics`,         { headers: { Authorization: "Bearer " + token() } }),
+            fetch(`${API}/analytics/average`, { headers: { Authorization: "Bearer " + token() } }),
+            fetch(`${API}/analytics/streak`,  { headers: { Authorization: "Bearer " + token() } }),
         ]);
 
-        const recent  = await recentRes.json();
-        const avg     = await avgRes.json();
-        const streak  = await streakRes.json();
-        const byDate  = await byDateRes.json();
-        const byDay   = await byDayRes.json();
-        const dist    = await distRes.json();
-        const scatter = await scatterRes.json();
-        const sleep   = await sleepRes.json();
+        const recent = await recentRes.json();
+        const avg    = await avgRes.json();
+        const streak = await streakRes.json();
 
         if (recent.message) {
             document.getElementById("mood-state").innerHTML = "<p>No entries yet. Go check in!</p>";
             return;
         }
 
-        // Stat cards
         document.getElementById("mood-state").innerHTML = `
             <div class="analytics-card">
                 <h2>Current Mood State</h2>
                 <p class="big-stat">${recent.mood_state}</p>
-                <p class="sub-stat">Score: ${recent.score}</p>
             </div>`;
 
         document.getElementById("average-score").innerHTML = `
             <div class="analytics-card">
                 <h2>All-Time Average</h2>
                 <p class="big-stat">${avg.mood_state}</p>
-                <p class="sub-stat">Score: ${avg.average_score}</p>
             </div>`;
 
         document.getElementById("streak").innerHTML = `
@@ -103,82 +126,99 @@ async function loadAnalytics() {
                 <p class="big-stat">${streak.streak} ${streak.streak === 1 ? "day" : "days"}</p>
             </div>`;
 
-        // Inject chart wrappers
         document.getElementById("chart").innerHTML =
+            `<div id="filter-bar" class="filter-bar"></div>` +
             wrap("c-mood") + wrap("c-day") + wrap("c-dist") + wrap("c-scatter") + wrap("c-sleep");
 
-        // 1. Mood over time
-        makeChart("c-mood", "line", {
-            labels: byDate.map(e => formatDate(e.timestamp)),
-            datasets: [{
-                label: "Mood Score",
-                data: byDate.map(e => e.mood_score),
-                borderColor: C.pink,
-                backgroundColor: C.pinkFill,
-                tension: 0.4,
-                fill: true,
-                pointRadius: 4,
-            }],
-        }, { ...baseOptions("Mood Over Time"), scales: { x: { ticks: { color: C.text }, grid: { color: C.grid } }, y: { min: 1, max: 10, ticks: { color: C.text }, grid: { color: C.grid } } } });
-
-        // 2. By day of week
-        makeChart("c-day", "bar", {
-            labels: byDay.map(d => d.day),
-            datasets: [{
-                label: "Avg Mood Score",
-                data: byDay.map(d => d.average),
-                backgroundColor: C.greenFill,
-                borderColor: C.green,
-                borderWidth: 2,
-                borderRadius: 6,
-            }],
-        }, baseOptions("Average Mood by Day of the Week"));
-
-        // 3. Mood state distribution
-        makeChart("c-dist", "bar", {
-            labels: dist.map(d => d.state),
-            datasets: [{
-                label: "Days",
-                data: dist.map(d => d.count),
-                backgroundColor: dist.map(d => STATE_COLORS[d.state] || C.green),
-                borderRadius: 6,
-            }],
-        }, baseOptions("How Have You Been Feeling?"));
-
-        // 4. Sleep vs mood scatter
-        makeChart("c-scatter", "scatter", {
-            datasets: [{
-                label: "Sleep vs Mood",
-                data: scatter.map(d => ({ x: d.sleep, y: d.score })),
-                backgroundColor: C.pink,
-                pointRadius: 6,
-            }],
-        }, {
-            ...baseOptions("Does Sleep Affect Your Mood?"),
-            scales: {
-                x: { title: { display: true, text: "Hours of Sleep", color: C.text }, ticks: { color: C.text }, grid: { color: C.grid } },
-                y: { title: { display: true, text: "Mood Score", color: C.text }, ticks: { color: C.text }, grid: { color: C.grid } },
-            },
-        });
-
-        // 5. Sleep over time
-        makeChart("c-sleep", "line", {
-            labels: sleep.map(e => formatDate(e.timestamp)),
-            datasets: [{
-                label: "Hours Slept",
-                data: sleep.map(e => e.sleep),
-                borderColor: C.green,
-                backgroundColor: C.greenFill,
-                tension: 0.4,
-                fill: true,
-                pointRadius: 4,
-            }],
-        }, { ...baseOptions("Your Sleep Over Time"), scales: { x: { ticks: { color: C.text }, grid: { color: C.grid } }, y: { min: 0, max: 24, ticks: { color: C.text }, grid: { color: C.grid } } } });
+        renderFilterBar();
+        loadCharts();
 
     } catch (err) {
         document.getElementById("mood-state").innerHTML = "<p>Can't reach the server. Is it running?</p>";
         console.error(err);
     }
+}
+
+async function loadCharts() {
+    const d = currentDays;
+    const headers = { Authorization: "Bearer " + token() };
+
+    const [byDateRes, byDayRes, distRes, scatterRes, sleepRes] = await Promise.all([
+        fetch(`${API}/analytics/by-date${q(d)}`,           { headers }),
+        fetch(`${API}/analytics/by-day${q(d)}`,            { headers }),
+        fetch(`${API}/analytics/mood-distribution${q(d)}`, { headers }),
+        fetch(`${API}/analytics/sleep-vs-mood${q(d)}`,     { headers }),
+        fetch(`${API}/analytics/sleep-over-time${q(d)}`,   { headers }),
+    ]);
+
+    const byDate  = await byDateRes.json();
+    const byDay   = await byDayRes.json();
+    const dist    = await distRes.json();
+    const scatter = await scatterRes.json();
+    const sleep   = await sleepRes.json();
+
+    makeChart("c-mood", "line", {
+        labels: byDate.map(e => formatDate(e.timestamp)),
+        datasets: [{
+            label: "Mood Score",
+            data: byDate.map(e => e.mood_score),
+            borderColor: C.pink,
+            backgroundColor: C.pinkFill,
+            tension: 0.4,
+            fill: true,
+            pointRadius: 4,
+        }],
+    }, { ...baseOptions("Mood Over Time"), scales: { x: { ticks: { color: C.text }, grid: { color: C.grid } }, y: { min: 1, max: 10, ticks: { color: C.text }, grid: { color: C.grid } } } });
+
+    makeChart("c-day", "bar", {
+        labels: byDay.map(d => d.day),
+        datasets: [{
+            label: "Avg Mood Score",
+            data: byDay.map(d => d.average),
+            backgroundColor: C.greenFill,
+            borderColor: C.green,
+            borderWidth: 2,
+            borderRadius: 6,
+        }],
+    }, baseOptions("Average Mood by Day of the Week"));
+
+    makeChart("c-dist", "bar", {
+        labels: dist.map(d => d.state),
+        datasets: [{
+            label: "Days",
+            data: dist.map(d => d.count),
+            backgroundColor: dist.map(d => STATE_COLORS[d.state] || C.green),
+            borderRadius: 6,
+        }],
+    }, baseOptions("How Have You Been Feeling?"));
+
+    makeChart("c-scatter", "scatter", {
+        datasets: [{
+            label: "Sleep vs Mood",
+            data: scatter.map(d => ({ x: d.sleep, y: d.score })),
+            backgroundColor: C.pink,
+            pointRadius: 6,
+        }],
+    }, {
+        ...baseOptions("Does Sleep Affect Your Mood?"),
+        scales: {
+            x: { title: { display: true, text: "Hours of Sleep", color: C.text }, ticks: { color: C.text }, grid: { color: C.grid } },
+            y: { title: { display: true, text: "Mood Score",    color: C.text }, ticks: { color: C.text }, grid: { color: C.grid } },
+        },
+    });
+
+    makeChart("c-sleep", "line", {
+        labels: sleep.map(e => formatDate(e.timestamp)),
+        datasets: [{
+            label: "Hours Slept",
+            data: sleep.map(e => e.sleep),
+            borderColor: C.green,
+            backgroundColor: C.greenFill,
+            tension: 0.4,
+            fill: true,
+            pointRadius: 4,
+        }],
+    }, { ...baseOptions("Your Sleep Over Time"), scales: { x: { ticks: { color: C.text }, grid: { color: C.grid } }, y: { min: 0, max: 24, ticks: { color: C.text }, grid: { color: C.grid } } } });
 }
 
 loadAnalytics();

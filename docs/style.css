@@ -2134,6 +2134,38 @@ footer span {
     margin-bottom: 0.25rem;
 }
 
+/* === Analytics filter bar === */
+
+.filter-bar {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.filter-btn {
+    background: var(--card);
+    color: var(--text);
+    border: 1.5px solid transparent;
+    border-radius: 2rem;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    font-family: "Quicksand", sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.filter-btn--active {
+    border-color: var(--heading);
+    color: var(--heading);
+}
+
+.filter-btn:hover {
+    border-color: var(--heading);
+}
+
 /* === Settings FAB === */
 
 .settings-fab {
