@@ -91,6 +91,13 @@ function q(days) {
     return days > 0 ? `?days=${days}` : "";
 }
 
+function xTickLimit(days) {
+    if (days <= 14)  return days;
+    if (days <= 30)  return 10;
+    if (days <= 90)  return 12;
+    return 13;
+}
+
 async function loadAnalytics() {
     try {
         const [recentRes, avgRes, streakRes] = await Promise.all([
@@ -168,7 +175,7 @@ async function loadCharts() {
             fill: true,
             pointRadius: 4,
         }],
-    }, { ...baseOptions("Mood Over Time"), scales: { x: { ticks: { color: C.text }, grid: { color: C.grid } }, y: { min: 1, max: 10, ticks: { color: C.text }, grid: { color: C.grid } } } });
+    }, { ...baseOptions("Mood Over Time"), scales: { x: { ticks: { color: C.text, maxTicksLimit: xTickLimit(currentDays), maxRotation: 0 }, grid: { color: C.grid } }, y: { min: 1, max: 10, ticks: { color: C.text }, grid: { color: C.grid } } } });
 
     makeChart("c-day", "bar", {
         labels: byDay.map(d => d.day),
@@ -218,7 +225,7 @@ async function loadCharts() {
             fill: true,
             pointRadius: 4,
         }],
-    }, { ...baseOptions("Your Sleep Over Time"), scales: { x: { ticks: { color: C.text }, grid: { color: C.grid } }, y: { min: 0, max: 24, ticks: { color: C.text }, grid: { color: C.grid } } } });
+    }, { ...baseOptions("Your Sleep Over Time"), scales: { x: { ticks: { color: C.text, maxTicksLimit: xTickLimit(currentDays), maxRotation: 0 }, grid: { color: C.grid } }, y: { min: 0, max: 24, ticks: { color: C.text }, grid: { color: C.grid } } } });
 }
 
 loadAnalytics();
