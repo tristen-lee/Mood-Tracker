@@ -81,6 +81,79 @@ document.getElementById("delete-account-btn").addEventListener("click", async ()
     }
 });
 
+// Notifications
+function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const raw = atob(base64);
+    return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
+
+const notifBtn = document.getElementById("notif-toggle-btn");
+const notifStatus = document.getElementById("notif-status");
+
+async function initNotifState() {
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+        notifBtn.disabled = true;
+        notifStatus.textContent = "Push notifications aren't supported in this browser.";
+        return;
+    }
+    const perm = Notification.permission;
+    if (perm === "granted") {
+        const reg = await navigator.serviceWorker.ready;
+        const sub = await reg.pushManager.getSubscription();
+        if (sub) {
+            notifBtn.textContent = "Disable Notifications";
+            notifStatus.textContent = "Notifications are on.";
+        } else {
+            notifBtn.textContent = "Enable Notifications";
+            notifStatus.textContent = "";
+        }
+    } else if (perm === "denied") {
+        notifBtn.disabled = true;
+        notifStatus.textContent = "Notifications are blocked. Allow them in your browser settings.";
+    }
+}
+
+notifBtn.addEventListener("click", async () => {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+
+    if (sub) {
+        await sub.unsubscribe();
+        await fetch(`${API}/push/unsubscribe`, {
+            method: "DELETE",
+            headers: { "Authorization": "Bearer " + token() }
+        });
+        notifBtn.textContent = "Enable Notifications";
+        notifStatus.textContent = "Notifications disabled.";
+        return;
+    }
+
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+        notifStatus.textContent = "Permission denied.";
+        return;
+    }
+
+    const keyRes = await fetch(`${API}/push/vapid-public-key`);
+    const { publicKey } = await keyRes.json();
+    const newSub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicKey)
+    });
+    const json = newSub.toJSON();
+    await fetch(`${API}/push/subscribe`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token() },
+        body: JSON.stringify({ endpoint: json.endpoint, p256dh: json.keys.p256dh, auth: json.keys.auth })
+    });
+    notifBtn.textContent = "Disable Notifications";
+    notifStatus.textContent = "Notifications are on. You'll get a morning message and an evening reminder.";
+});
+
+initNotifState();
+
 // Theme
 const current = localStorage.getItem("theme") || "system";
 document.querySelectorAll(".theme-btn").forEach(btn => {

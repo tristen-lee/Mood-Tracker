@@ -5,12 +5,81 @@ from datetime import datetime, timedelta
 from collections import defaultdict, Counter
 from typing import Optional
 import os
+import json
+import random
 import anthropic
 from db.database import get_connection
 from db.auth import hash_password, verify_password, create_token, decode_token
 from core.scoring import combined_score, mood_state
+from pywebpush import webpush, WebPushException
+from apscheduler.schedulers.background import BackgroundScheduler
 
 anthropic_client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+
+VAPID_PRIVATE_KEY = os.environ.get("VAPID_PRIVATE_KEY", "")
+VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "")
+VAPID_CLAIMS = {"sub": "mailto:tristen.lee1221@gmail.com"}
+
+MORNING_MESSAGES = [
+    "A new day. How are you feeling?",
+    "Good morning. Taking a moment for yourself matters.",
+    "Today is a new page. You've got this.",
+    "Showing up is enough. Check in when you're ready.",
+    "Remember: small steps are still steps. 🪨",
+    "Hey. Just checking in on you.",
+    "A fresh start. What's going on today?",
+]
+
+def _send_push(endpoint, p256dh, auth, title, body):
+    try:
+        webpush(
+            subscription_info={"endpoint": endpoint, "keys": {"p256dh": p256dh, "auth": auth}},
+            data=json.dumps({"title": title, "body": body}),
+            vapid_private_key=VAPID_PRIVATE_KEY,
+            vapid_claims=VAPID_CLAIMS,
+        )
+    except WebPushException as e:
+        if e.response and e.response.status_code in (404, 410):
+            conn = get_connection()
+            cur = conn.cursor()
+            cur.execute("DELETE FROM push_subscriptions WHERE endpoint = %s", (endpoint,))
+            conn.commit()
+            conn.close()
+    except Exception:
+        pass
+
+def _send_morning_notifications():
+    if not VAPID_PRIVATE_KEY:
+        return
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT endpoint, p256dh, auth FROM push_subscriptions")
+    subs = cur.fetchall()
+    conn.close()
+    msg = random.choice(MORNING_MESSAGES)
+    for endpoint, p256dh, auth in subs:
+        _send_push(endpoint, p256dh, auth, "Good morning ✨", msg)
+
+def _send_evening_notifications():
+    if not VAPID_PRIVATE_KEY:
+        return
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT ps.endpoint, ps.p256dh, ps.auth
+        FROM push_subscriptions ps
+        LEFT JOIN entries e ON e.user_id = ps.user_id AND e.timestamp::date = CURRENT_DATE
+        WHERE e.id IS NULL
+    """)
+    subs = cur.fetchall()
+    conn.close()
+    for endpoint, p256dh, auth in subs:
+        _send_push(endpoint, p256dh, auth, "Cairn 🪨", "Don't forget to check in today. How was your day?")
+
+_scheduler = BackgroundScheduler()
+_scheduler.add_job(_send_morning_notifications, "cron", hour=14, minute=0)  # 9am ET / 6am PT
+_scheduler.add_job(_send_evening_notifications, "cron", hour=1, minute=0)   # 8pm ET / 5pm PT
+_scheduler.start()
 
 app = FastAPI()
 
@@ -50,6 +119,11 @@ class Entry(BaseModel):
     social_withdrawal: bool
     notes: str
     medications_taken: Optional[list] = []
+
+class PushSubscriptionBody(BaseModel):
+    endpoint: str
+    p256dh: str
+    auth: str
 
 class MedicationBody(BaseModel):
     name: str
@@ -218,10 +292,42 @@ def delete_account(authorization: Optional[str] = Header(None)):
     cur.execute("DELETE FROM medications WHERE user_id = %s", (user_id,))
     cur.execute("DELETE FROM jasper_summaries WHERE user_id = %s", (user_id,))
     cur.execute("DELETE FROM user_achievements WHERE user_id = %s", (user_id,))
+    cur.execute("DELETE FROM push_subscriptions WHERE user_id = %s", (user_id,))
     cur.execute("DELETE FROM users WHERE id = %s", (user_id,))
     conn.commit()
     conn.close()
     return {"message": "Account deleted."}
+
+
+# --- Push Notifications ---
+
+@app.get("/push/vapid-public-key")
+def get_vapid_public_key():
+    return {"publicKey": VAPID_PUBLIC_KEY}
+
+@app.post("/push/subscribe")
+def push_subscribe(body: PushSubscriptionBody, authorization: Optional[str] = Header(None)):
+    user_id = get_user_id(authorization)
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO push_subscriptions (user_id, endpoint, p256dh, auth)
+        VALUES (%s, %s, %s, %s)
+        ON CONFLICT (endpoint) DO UPDATE SET user_id = EXCLUDED.user_id, p256dh = EXCLUDED.p256dh, auth = EXCLUDED.auth
+    """, (user_id, body.endpoint, body.p256dh, body.auth))
+    conn.commit()
+    conn.close()
+    return {"ok": True}
+
+@app.delete("/push/unsubscribe")
+def push_unsubscribe(authorization: Optional[str] = Header(None)):
+    user_id = get_user_id(authorization)
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM push_subscriptions WHERE user_id = %s", (user_id,))
+    conn.commit()
+    conn.close()
+    return {"ok": True}
 
 
 # --- User profile ---
