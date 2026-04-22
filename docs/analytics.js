@@ -201,7 +201,7 @@ async function loadCharts() {
 
     makeChart("c-scatter", "scatter", {
         datasets: [{
-            label: "Sleep vs Mood",
+            label: "Sleep (hrs) vs Mood Score",
             data: scatter.map(d => ({ x: d.sleep, y: d.score })),
             backgroundColor: C.pink,
             pointRadius: 6,
@@ -209,8 +209,8 @@ async function loadCharts() {
     }, {
         ...baseOptions("Does Sleep Affect Your Mood?"),
         scales: {
-            x: { title: { display: true, text: "Hours of Sleep", color: C.text }, ticks: { color: C.text }, grid: { color: C.grid } },
-            y: { title: { display: true, text: "Mood Score",    color: C.text }, ticks: { color: C.text }, grid: { color: C.grid } },
+            x: { ticks: { color: C.text }, grid: { color: C.grid } },
+            y: { ticks: { color: C.text }, grid: { color: C.grid } },
         },
     });
 

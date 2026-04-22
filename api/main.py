@@ -13,6 +13,7 @@ from db.auth import hash_password, verify_password, create_token, decode_token
 from core.scoring import combined_score, mood_state
 from pywebpush import webpush, WebPushException
 from apscheduler.schedulers.background import BackgroundScheduler
+import pytz
 
 anthropic_client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
@@ -76,9 +77,10 @@ def _send_evening_notifications():
     for endpoint, p256dh, auth in subs:
         _send_push(endpoint, p256dh, auth, "Cairn 🪨", "Don't forget to check in today. How was your day?")
 
-_scheduler = BackgroundScheduler()
-_scheduler.add_job(_send_morning_notifications, "cron", hour=14, minute=0)  # 9am ET / 6am PT
-_scheduler.add_job(_send_evening_notifications, "cron", hour=1, minute=0)   # 8pm ET / 5pm PT
+_PT = pytz.timezone("America/Los_Angeles")
+_scheduler = BackgroundScheduler(timezone=_PT)
+_scheduler.add_job(_send_morning_notifications, "cron", hour=9,  minute=0)
+_scheduler.add_job(_send_evening_notifications, "cron", hour=20, minute=0)
 _scheduler.start()
 
 app = FastAPI()

@@ -48,6 +48,7 @@
 
 /* === Body === */
 html {
+    min-height: 100%;
     background-color: var(--background);
 }
 
@@ -57,15 +58,20 @@ body {
     color: var(--text);
     padding: 1.5rem 2rem;
     overflow-x: hidden;
+    min-height: 100vh;
 }
 
 /* === Logo === */
 .site-header {
     width: 100%;
-    padding: 1.5rem 2rem 0;
-    margin-bottom: 2rem;
-    text-align: left;
-    align-self: flex-start;
+    padding: 2.5rem 2rem 0;
+    margin-bottom: 2.5rem;
+    text-align: center;
+    align-self: center;
+}
+
+.site-header .logo {
+    height: 44px;
 }
 
 .logo-link {
@@ -1140,9 +1146,9 @@ footer span {
 }
 
 .theme-btn.active {
-    border-color: var(--accent);
-    background-color: var(--accent);
-    color: #fff;
+    border-color: var(--heading);
+    background-color: var(--heading);
+    color: var(--background);
 }
 
 .theme-btn:hover:not(.active) {
@@ -1558,7 +1564,7 @@ footer span {
     justify-content: space-between;
     width: 100%;
     max-width: 480px;
-    margin: 0 auto 1.5rem;
+    margin: 0 auto 2rem;
     padding: 0 0.25rem;
 }
 
@@ -1568,7 +1574,7 @@ footer span {
     color: var(--heading);
     font-family: "Montserrat Alternates", sans-serif;
     text-align: center;
-    margin: 0.25rem 0 0.75rem;
+    margin: 0.5rem 0 1.5rem;
 }
 
 .store-btn {
@@ -1592,7 +1598,7 @@ footer span {
 .streak-crystals {
     font-size: 0.88rem;
     color: #fff;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1.25rem;
 }
 
 /* === Milestone popup === */
@@ -2006,11 +2012,15 @@ footer span {
         height: 280px;
     }
 
-    /* Top nav wraps gracefully */
+    /* Top nav scrolls horizontally on small screens */
     .top-nav {
-        flex-wrap: wrap;
-        gap: 0.75rem;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 1rem;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
     }
+    .top-nav::-webkit-scrollbar { display: none; }
 
     h1 {
         font-size: 1.6rem;
