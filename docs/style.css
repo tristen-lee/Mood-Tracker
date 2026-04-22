@@ -59,6 +59,7 @@ body {
     padding: 1.5rem 2rem;
     overflow-x: hidden;
     min-height: 100vh;
+    overscroll-behavior-y: none;
 }
 
 /* === Logo === */
@@ -119,6 +120,7 @@ h1 {
     color: var(--heading);
     font-size: 2rem;
     margin-bottom: 0.5rem;
+    text-align: center;
 }
 
 h2 {
@@ -819,6 +821,25 @@ footer a {
     padding: 0 0 1.5rem 0;
     border-bottom: 1px solid var(--nav-divider);
     margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.hamburger-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    margin-left: auto;
+    line-height: 1;
 }
 
 .nav-home {
@@ -1191,8 +1212,8 @@ footer span {
     margin-bottom: 1.25rem;
     padding: 0.6rem 1.25rem;
     background: transparent;
-    border: 1px solid var(--accent);
-    color: var(--accent);
+    border: 1px solid var(--heading);
+    color: var(--heading);
     border-radius: 0.5rem;
     font-family: "Quicksand", sans-serif;
     font-weight: 600;
@@ -1202,8 +1223,8 @@ footer span {
 }
 
 .export-btn:hover {
-    background: var(--accent);
-    color: #fff;
+    background: var(--heading);
+    color: var(--background);
 }
 
 .med-item {
@@ -1561,7 +1582,7 @@ footer span {
 .dashboard-top-bar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     width: 100%;
     max-width: 480px;
     margin: 0 auto 2rem;
@@ -2012,15 +2033,41 @@ footer span {
         height: 280px;
     }
 
-    /* Top nav scrolls horizontally on small screens */
-    .top-nav {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        gap: 1rem;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
+    /* Top nav: hamburger on mobile */
+    .hamburger-btn {
+        display: block;
     }
-    .top-nav::-webkit-scrollbar { display: none; }
+
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: calc(100% + 0.75rem);
+        left: -2rem;
+        right: -2rem;
+        background: var(--card);
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0.75rem 1.5rem 1rem;
+        gap: 0;
+        border-bottom: 1px solid var(--nav-divider);
+        z-index: 200;
+    }
+
+    .nav-links.open {
+        display: flex;
+    }
+
+    .nav-links .nav-link {
+        padding: 0.65rem 0;
+        font-size: 1rem;
+        opacity: 0.85;
+        width: 100%;
+        border-bottom: 1px solid var(--divider);
+    }
+
+    .nav-links .nav-link:last-child {
+        border-bottom: none;
+    }
 
     h1 {
         font-size: 1.6rem;
@@ -2315,11 +2362,13 @@ footer span {
 [data-theme="rainbow-obsidian"] {
     --background: #0d0d12;
     --card: #16161f;
-    --heading: #e0e0ff;
-    --subheading: #e0e0f0;
-    --text: #d8d8ec;
-    --subtext: #7070a0;
+    --heading: #a0a0e8;
+    --subheading: #d0d0e8;
+    --text: #c8c8e0;
+    --subtext: #6060a0;
     --nav-bg: #08080d;
+    --border: #3a3a5a;
+    --track: #3a3a5a;
 }
 
 @keyframes pride-cycle {
@@ -2491,7 +2540,8 @@ footer span {
 }
 
 .step-dot.done {
-    background: var(--accent);
+    background: var(--heading);
+    opacity: 0.5;
 }
 
 .step-screen {
@@ -2525,16 +2575,19 @@ footer span {
 }
 
 .symptom-pill {
-    padding: 0.65rem 0.75rem;
+    padding: 0.65rem 0.5rem;
     border-radius: 2rem;
     border: 1.5px solid var(--border);
     background: transparent;
     color: var(--text);
     font-family: "Quicksand", sans-serif;
-    font-size: 0.9rem;
+    font-size: 0.82rem;
     cursor: pointer;
     transition: background 0.15s, border-color 0.15s, color 0.15s;
     text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .symptom-pill:hover {

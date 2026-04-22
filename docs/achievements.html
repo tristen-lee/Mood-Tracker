@@ -24,13 +24,15 @@
 <body>
     <nav class="top-nav">
         <a href="dashboard.html" class="logo-link"><img src="assets/cairn.svg" alt="Cairn" class="logo logo-nav"></a>
-        
-        <a href="log.html" class="nav-link">Check In</a>
-        <a href="entries.html" class="nav-link">Entries</a>
-        <a href="analytics.html" class="nav-link">Analytics</a>
-        <a href="summary.html" class="nav-link">Summary</a>
-        <a href="achievements.html" class="nav-link">Achievements</a>
-        <a href="jasper.html" class="nav-link nav-link--jasper">✦ Jasper</a>
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="Menu">☰</button>
+        <div class="nav-links" id="nav-links">
+            <a href="log.html" class="nav-link">Check In</a>
+            <a href="entries.html" class="nav-link">Entries</a>
+            <a href="analytics.html" class="nav-link">Analytics</a>
+            <a href="summary.html" class="nav-link">Summary</a>
+            <a href="achievements.html" class="nav-link">Achievements</a>
+            <a href="jasper.html" class="nav-link nav-link--jasper">✦ Jasper</a>
+        </div>
     </nav>
 
     <h1>Achievements</h1>
@@ -57,5 +59,6 @@
     </footer>
 
     <script src="achievements.js?v=6"></script>
+    <script src="nav.js"></script>
 </body>
 </html>
