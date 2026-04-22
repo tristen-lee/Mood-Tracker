@@ -2351,25 +2351,86 @@ footer span {
 /* === Oregon Sunstone theme === */
 
 [data-theme="oregon-sunstone"] {
-    --background: #1a1200;
-    --card: #261c00;
-    --heading: #f5c842;
-    --subheading: #fef0b0;
-    --text: #fef0b0;
-    --subtext: #a08020;
-    --nav-bg: #100c00;
+    --background: #fdf6e3;
+    --card: #fff9ed;
+    --heading: #c8880a;
+    --subheading: #4a3010;
+    --text: #3d2b08;
+    --subtext: #9a7030;
+    --nav-bg: #f5e8c0;
+    --border: #ddc880;
+    --track: #ddc880;
+    --card-hover: #f0e0a0;
+    --divider: rgba(0,0,0,0.07);
+    --nav-divider: rgba(0,0,0,0.08);
 }
 
 /* === Thunderegg theme === */
 
 [data-theme="thunderegg"] {
-    --background: #12141a;
-    --card: #1c1f28;
-    --heading: #9b8fd4;
-    --subheading: #dcd8f0;
-    --text: #dcd8f0;
-    --subtext: #5a5480;
-    --nav-bg: #0c0e13;
+    --background: #f3f0fa;
+    --card: #faf8ff;
+    --heading: #7b63c4;
+    --subheading: #2d2045;
+    --text: #2d2045;
+    --subtext: #8878c0;
+    --nav-bg: #e8e3f5;
+    --border: #c8bce8;
+    --track: #c8bce8;
+    --card-hover: #ede8f8;
+    --divider: rgba(0,0,0,0.07);
+    --nav-divider: rgba(0,0,0,0.08);
+}
+
+/* === Clear Quartz theme === */
+
+[data-theme="clear-quartz"] {
+    --background: #f7f9fc;
+    --card: #ffffff;
+    --heading: #5a9abf;
+    --subheading: #2c3e50;
+    --text: #2c3e50;
+    --subtext: #7a9ab0;
+    --nav-bg: #edf2f7;
+    --border: #c8d8e4;
+    --track: #c8d8e4;
+    --card-hover: #edf2f7;
+    --divider: rgba(0,0,0,0.07);
+    --nav-divider: rgba(0,0,0,0.08);
+}
+
+/* === Labradorite theme === */
+
+[data-theme="labradorite"] {
+    --background: #e8eff2;
+    --card: #f4f8fa;
+    --heading: #2a7a8a;
+    --subheading: #1a3540;
+    --text: #1a3540;
+    --subtext: #5a8a98;
+    --nav-bg: #dce8ec;
+    --border: #a8c8d4;
+    --track: #a8c8d4;
+    --card-hover: #dce8ec;
+    --divider: rgba(0,0,0,0.07);
+    --nav-divider: rgba(0,0,0,0.08);
+}
+
+/* === Moonstone theme === */
+
+[data-theme="moonstone"] {
+    --background: #f0f2f8;
+    --card: #fafbff;
+    --heading: #4a6fc0;
+    --subheading: #1a2040;
+    --text: #1a2040;
+    --subtext: #7080b8;
+    --nav-bg: #e2e6f5;
+    --border: #b8c4e0;
+    --track: #b8c4e0;
+    --card-hover: #e2e6f5;
+    --divider: rgba(0,0,0,0.07);
+    --nav-divider: rgba(0,0,0,0.08);
 }
 
 /* === Check-in wizard === */
