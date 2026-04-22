@@ -99,7 +99,19 @@ function xTickLimit(days) {
     return 13;
 }
 
+function skeletonStatCard() {
+    return `
+        <div class="skeleton-card">
+            <div class="skeleton skeleton-line skeleton-line--med"></div>
+            <div class="skeleton skeleton-line skeleton-line--short" style="height:32px;margin-top:0.25rem"></div>
+        </div>`;
+}
+
 async function loadAnalytics() {
+    document.getElementById("mood-state").innerHTML    = skeletonStatCard();
+    document.getElementById("average-score").innerHTML = skeletonStatCard();
+    document.getElementById("streak").innerHTML        = skeletonStatCard();
+
     try {
         const [recentRes, avgRes, streakRes] = await Promise.all([
             fetch(`${API}/analytics`,         { headers: { Authorization: "Bearer " + token() } }),

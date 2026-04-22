@@ -34,6 +34,39 @@
     box-sizing: border-box;
 }
 
+/* === Skeleton loader === */
+@keyframes shimmer {
+    0%   { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+}
+
+.skeleton {
+    background: linear-gradient(90deg, var(--card) 25%, var(--card-hover, #4a525b) 50%, var(--card) 75%);
+    background-size: 800px 100%;
+    animation: shimmer 1.4s infinite linear;
+    border-radius: 0.5rem;
+}
+
+.skeleton-card {
+    background: var(--card);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.skeleton-line {
+    height: 14px;
+    border-radius: 4px;
+}
+
+.skeleton-line--short { width: 40%; }
+.skeleton-line--med   { width: 65%; }
+.skeleton-line--full  { width: 100%; }
+.skeleton-line--title { height: 20px; width: 55%; }
+
 /* === Fade up animation === */
 @keyframes fadeUp {
     from {

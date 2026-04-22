@@ -111,8 +111,18 @@ document.getElementById("edit-form").addEventListener("submit", async function (
     }
 });
 
+function skeletonCard() {
+    return `
+        <div class="skeleton-card">
+            <div class="skeleton skeleton-line skeleton-line--short"></div>
+            <div class="skeleton skeleton-line skeleton-line--full"></div>
+            <div class="skeleton skeleton-line skeleton-line--med"></div>
+        </div>`;
+}
+
 async function loadEntries() {
     const container = document.getElementById("entries-list");
+    container.innerHTML = skeletonCard() + skeletonCard() + skeletonCard();
 
     try {
         const response = await fetch(`${API}/entries`, {
