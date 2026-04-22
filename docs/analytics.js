@@ -13,10 +13,11 @@ const C = {
 
 const STATE_COLORS = {
     "Manic":     "#9b59b6",
-    "Hypomanic": "#5cb85c",
+    "Hypomanic": "#a29bfe",
+    "Mixed":     "#e17055",
     "Stable":    "#5bc0de",
     "Depressed": "#f0ad4e",
-    "Suicidal":  "#d9534f",
+    "Severe":    "#d9534f",
 };
 
 const FILTERS = [

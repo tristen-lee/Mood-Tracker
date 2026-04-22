@@ -10,7 +10,7 @@ import random
 import anthropic
 from db.database import get_connection
 from db.auth import hash_password, verify_password, create_token, decode_token
-from core.scoring import combined_score, mood_state
+from core.scoring import combined_score, mood_state, classify_state
 from pywebpush import webpush, WebPushException
 from apscheduler.schedulers.background import BackgroundScheduler
 import pytz
@@ -26,9 +26,35 @@ MORNING_MESSAGES = [
     "Good morning. Taking a moment for yourself matters.",
     "Today is a new page. You've got this.",
     "Showing up is enough. Check in when you're ready.",
-    "Remember: small steps are still steps. 🪨",
+    "Small steps are still steps. 🪨",
     "Hey. Just checking in on you.",
     "A fresh start. What's going on today?",
+    "Morning. One day at a time.",
+    "You're still here. That matters.",
+    "Whatever yesterday was — today is different.",
+    "Even slow days count. Good morning.",
+    "You don't have to be okay to show up.",
+    "Start where you are. That's always enough.",
+    "Rise and shine. How's the mind today?",
+    "Be patient with yourself today.",
+    "A new morning, a new chance to listen to yourself.",
+]
+
+EVENING_MESSAGES = [
+    "Don't forget to check in today. How was your day?",
+    "End your day with a check-in. Takes under a minute. 🪨",
+    "Hey — how did today go? Log it before you sleep.",
+    "A quiet moment to reflect. Check in when you're ready.",
+    "Your data tells a story. Add today's chapter.",
+    "Before you wind down — how was today?",
+    "How are you really feeling tonight?",
+    "Evening check-in time. What was today like?",
+    "A minute of self-reflection before bed goes a long way.",
+    "How did today treat you? Log it in Cairn.",
+    "One more check-in before you rest.",
+    "How are you holding up tonight?",
+    "Take a breath. How was today, really?",
+    "Log it and let it go. How was your day?",
 ]
 
 def _send_push(endpoint, p256dh, auth, title, body):
@@ -74,8 +100,9 @@ def _send_evening_notifications():
     """)
     subs = cur.fetchall()
     conn.close()
+    msg = random.choice(EVENING_MESSAGES)
     for endpoint, p256dh, auth in subs:
-        _send_push(endpoint, p256dh, auth, "Cairn 🪨", "Don't forget to check in today. How was your day?")
+        _send_push(endpoint, p256dh, auth, "Cairn 🪨", msg)
 
 _PT = pytz.timezone("America/Los_Angeles")
 _scheduler = BackgroundScheduler(timezone=_PT)
@@ -119,7 +146,9 @@ class Entry(BaseModel):
     racing_thoughts: bool
     irritability: bool
     social_withdrawal: bool
-    notes: str
+    anxiety: bool = False
+    felt_rested: Optional[bool] = None
+    notes: str = ""
     medications_taken: Optional[list] = []
 
 class PushSubscriptionBody(BaseModel):
@@ -402,13 +431,13 @@ def get_entries(authorization: Optional[str] = Header(None)):
     cur.execute("""
         SELECT mood_score, sleep, energy_level, mania, psychosis, depression,
                intrusive_thoughts, racing_thoughts, irritability, social_withdrawal,
-               notes, timestamp
+               anxiety, felt_rested, notes, timestamp
         FROM entries WHERE user_id = %s ORDER BY timestamp ASC
     """, (user_id,))
     rows = cur.fetchall()
     cols = ["mood_score", "sleep", "energy_level", "mania", "psychosis", "depression",
             "intrusive_thoughts", "racing_thoughts", "irritability", "social_withdrawal",
-            "notes", "timestamp"]
+            "anxiety", "felt_rested", "notes", "timestamp"]
     entries = [dict(zip(cols, row)) for row in rows]
     cur.execute("""
         SELECT em.date, m.name FROM entry_medications em
@@ -438,11 +467,13 @@ def create_entry(entry: Entry, authorization: Optional[str] = Header(None)):
         raise HTTPException(status_code=409, detail="You've already checked in today. Go to My Entries to edit it.")
     cur.execute("""
         INSERT INTO entries (user_id, mood_score, sleep, energy_level, mania, psychosis,
-            depression, intrusive_thoughts, racing_thoughts, irritability, social_withdrawal, notes)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            depression, intrusive_thoughts, racing_thoughts, irritability, social_withdrawal,
+            anxiety, felt_rested, notes)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """, (user_id, entry.mood_score, entry.sleep, entry.energy_level, entry.mania,
           entry.psychosis, entry.depression, entry.intrusive_thoughts, entry.racing_thoughts,
-          entry.irritability, entry.social_withdrawal, entry.notes))
+          entry.irritability, entry.social_withdrawal, entry.anxiety, entry.felt_rested,
+          entry.notes))
     entry_date = datetime.now().date()
     if entry.medications_taken:
         for med_id in entry.medications_taken:
@@ -452,7 +483,9 @@ def create_entry(entry: Entry, authorization: Optional[str] = Header(None)):
             )
     conn.commit()
     conn.close()
-    score = combined_score(entry.model_dump())
+    entry_dict = entry.model_dump()
+    score = combined_score(entry_dict)
+    state = classify_state(entry_dict)
 
     # Award crystals + check streak milestones
     all_entries = fetch_entries(user_id)
@@ -498,7 +531,7 @@ def create_entry(entry: Entry, authorization: Optional[str] = Header(None)):
     return {
         "message": "Entry logged successfully",
         "score": score,
-        "mood_state": mood_state(score),
+        "mood_state": state,
         "streak": streak,
         "crystals_earned": crystals_earned,
         "crystals_total": new_total,
@@ -518,18 +551,20 @@ def update_entry(date: str, entry: Entry, authorization: Optional[str] = Header(
     cur.execute("""
         UPDATE entries SET mood_score=%s, sleep=%s, energy_level=%s, mania=%s, psychosis=%s,
             depression=%s, intrusive_thoughts=%s, racing_thoughts=%s, irritability=%s,
-            social_withdrawal=%s, notes=%s
+            social_withdrawal=%s, anxiety=%s, felt_rested=%s, notes=%s
         WHERE user_id=%s AND timestamp::date=%s
     """, (entry.mood_score, entry.sleep, entry.energy_level, entry.mania, entry.psychosis,
           entry.depression, entry.intrusive_thoughts, entry.racing_thoughts, entry.irritability,
-          entry.social_withdrawal, entry.notes, user_id, converted))
+          entry.social_withdrawal, entry.anxiety, entry.felt_rested, entry.notes,
+          user_id, converted))
     if cur.rowcount == 0:
         conn.close()
         raise HTTPException(status_code=404, detail="No entry found for that date.")
     conn.commit()
     conn.close()
-    score = combined_score(entry.model_dump())
-    return {"message": "Entry updated.", "score": score, "mood_state": mood_state(score)}
+    entry_dict = entry.model_dump()
+    score = combined_score(entry_dict)
+    return {"message": "Entry updated.", "score": score, "mood_state": classify_state(entry_dict)}
 
 @app.delete("/entries")
 def delete_entry(date: str, authorization: Optional[str] = Header(None)):
@@ -582,7 +617,7 @@ def get_analytics(authorization: Optional[str] = Header(None)):
         return {"message": "No entries yet."}
     recent = data[-1]
     score = combined_score(recent)
-    return {"score": score, "mood_state": mood_state(score)}
+    return {"score": score, "mood_state": classify_state(recent)}
 
 @app.get("/analytics/average")
 def get_average(authorization: Optional[str] = Header(None)):
@@ -643,7 +678,7 @@ def get_mood_distribution(days: int = 0, authorization: Optional[str] = Header(N
     if days > 0:
         cutoff = datetime.now().date() - timedelta(days=days)
         data = [e for e in data if e["timestamp"].date() >= cutoff]
-    counts = Counter(mood_state(combined_score(e)) for e in data)
+    counts = Counter(classify_state(e) for e in data)
     return [{"state": state, "count": count} for state, count in counts.items()]
 
 @app.get("/analytics/sleep-vs-mood")
@@ -668,58 +703,146 @@ def get_sleep_over_time(days: int = 0, authorization: Optional[str] = Header(Non
 def get_episode_risk(authorization: Optional[str] = Header(None)):
     user_id = get_user_id(authorization)
     data = fetch_entries(user_id)
-    if len(data) < 7:
+
+    if len(data) < 3:
         return {"risk": "none", "message": "", "triggers": []}
 
-    recent = data[-7:]
-    scores = [combined_score(e) for e in recent]
-    last = recent[-1]
+    recent_7  = data[-7:]  if len(data) >= 7  else data
+    recent_14 = data[-14:] if len(data) >= 14 else data
+    recent_21 = data[-21:] if len(data) >= 21 else data
+
+    last = data[-1]
+    scores_7  = [combined_score(e) for e in recent_7]
+    scores_21 = [combined_score(e) for e in recent_21]
     triggers = []
 
-    # Mixed state — highest priority
-    if last["racing_thoughts"] and last["depression"]:
+    ## Mixed or Severe on last entry — highest priority
+    last_state = classify_state(last)
+
+    if last_state == "Mixed":
         return {
             "risk": "mixed",
-            "message": "Your last entry shows signs of a mixed state — racing thoughts alongside depression. This is a high-risk pattern. Please reach out to someone you trust.",
+            "message": "Your last entry shows signs of a mixed state — elevated and depressed at the same time. This is one of the harder patterns to sit with. Please reach out to someone you trust.",
             "triggers": ["mixed state detected"]
         }
 
-    # Check for consecutive low sleep
-    sleep_values = [e["sleep"] for e in recent[-3:]]
-    if all(s <= 5 for s in sleep_values):
-        triggers.append("sleep under 5 hours for 3+ days")
+    if last_state == "Severe":
+        return {
+            "risk": "depression",
+            "message": "Your last entry includes some serious symptoms. Please check in with your care team or someone you trust today.",
+            "triggers": ["severe depressive episode"]
+        }
 
-    # Score trend over last 5 entries
-    if len(scores) >= 5:
-        trend = scores[-1] - scores[-5]
-    else:
-        trend = scores[-1] - scores[0]
+    ## Felt rested on low sleep — strongest single manic prodrome signal
+    rested_on_low_sleep = any(
+        e.get("felt_rested") and e["sleep"] <= 6
+        for e in recent_7[-3:]
+    )
 
-    # Mania risk
-    manic_flags = sum(1 for e in recent[-5:] if e["mania"] or e["racing_thoughts"])
-    if trend >= 4 or (triggers and scores[-1] >= 16) or manic_flags >= 3:
-        if trend >= 4:
-            triggers.append("mood score rising")
-        if manic_flags >= 3:
-            triggers.append("elevated symptoms in recent entries")
+    if rested_on_low_sleep:
+        triggers.append("feeling rested despite low sleep")
+
+    ## Consecutive disrupted sleep
+    if all(e["sleep"] <= 5 for e in recent_7[-3:]):
+        triggers.append("sleep disrupted for 3+ consecutive days")
+
+    ## Mania trend and symptom count over last 7
+    mania_trend  = scores_7[-1] - scores_7[0]
+    manic_flags  = sum(1 for e in recent_7 if e["mania"] or e["racing_thoughts"])
+
+    if mania_trend >= 4:
+        triggers.append("mood score rising")
+
+    if manic_flags >= 3:
+        triggers.append("elevated symptoms in recent entries")
+
+    if triggers:
         return {
             "risk": "mania",
             "message": "Your recent entries suggest an elevated episode may be approaching. Keep an eye on your sleep and reach out to your care team if things escalate.",
             "triggers": triggers
         }
 
-    # Depression risk
-    depressive_flags = sum(1 for e in recent[-5:] if e["depression"] or e["social_withdrawal"])
-    if trend <= -4 or depressive_flags >= 3:
-        if trend <= -4:
-            triggers.append("mood score declining")
-        if depressive_flags >= 3:
-            triggers.append("depressive symptoms in recent entries")
+    ## Prodromal mania — gradual sleep decrease + energy increase over 14 days
+    if len(recent_14) >= 7:
+        mid = len(recent_14) // 2
+        first_sleep   = sum(e["sleep"] for e in recent_14[:mid]) / mid
+        second_sleep  = sum(e["sleep"] for e in recent_14[mid:]) / (len(recent_14) - mid)
+        first_energy  = sum(e["energy_level"] for e in recent_14[:mid]) / mid
+        second_energy = sum(e["energy_level"] for e in recent_14[mid:]) / (len(recent_14) - mid)
+
+        if second_sleep < first_sleep - 0.75 and second_energy > first_energy + 0.75:
+            return {
+                "risk": "mania",
+                "message": "Your sleep has been gradually decreasing while your energy creeps up. This is an early warning pattern for an elevated episode — worth keeping an eye on.",
+                "triggers": ["gradual sleep decrease", "gradual energy increase"]
+            }
+
+    ## Depression risk — 21-day window catches slow-building depressive episodes
+    dep_states = [classify_state(e) for e in recent_21]
+    dep_count  = sum(1 for s in dep_states if s in ("Depressed", "Severe"))
+    dep_flags  = sum(1 for e in recent_7 if e["depression"] or e["social_withdrawal"])
+    dep_trend  = scores_21[-1] - scores_21[0]
+
+    if dep_trend <= -4:
+        triggers.append("mood score declining")
+
+    if dep_flags >= 3:
+        triggers.append("depressive symptoms in recent entries")
+
+    if dep_count >= 5:
+        triggers.append(f"{dep_count} depressed days in the last {len(recent_21)} entries")
+
+    if triggers:
         return {
             "risk": "depression",
             "message": "Your recent entries suggest a depressive episode may be approaching. Be gentle with yourself and consider reaching out to someone you trust.",
             "triggers": triggers
         }
+
+    ## Prodromal depression — gradual mood decline + increasing withdrawal over 21 days
+    if len(recent_21) >= 14:
+        mid = len(recent_21) // 2
+        first_mood  = sum(e["mood_score"] for e in recent_21[:mid]) / mid
+        second_mood = sum(e["mood_score"] for e in recent_21[mid:]) / (len(recent_21) - mid)
+        withdrawal_recent = sum(1 for e in recent_21[-7:] if e["social_withdrawal"])
+
+        if second_mood < first_mood - 1.0 and withdrawal_recent >= 3:
+            return {
+                "risk": "depression",
+                "message": "Your mood has been quietly dipping and you've been pulling away from people. These can be early signs of a depressive episode building. Check in with yourself.",
+                "triggers": ["gradual mood decline", "increasing social withdrawal"]
+            }
+
+    ## Medication gap — set up meds but stopped logging them recently
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT COUNT(*) FROM medications WHERE user_id = %s", (user_id,))
+    med_count = cur.fetchone()[0]
+    conn.close()
+
+    if med_count > 0 and len(data) >= 10:
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT DISTINCT date FROM entry_medications
+            WHERE user_id = %s ORDER BY date DESC LIMIT 20
+        """, (user_id,))
+        med_dates = {row[0] for row in cur.fetchall()}
+        conn.close()
+
+        recent_5_dates = {e["timestamp"].date() for e in data[-5:]}
+        older_dates    = {e["timestamp"].date() for e in data[-15:-5]}
+
+        was_logging    = bool(older_dates & med_dates)
+        stopped_logging = not bool(recent_5_dates & med_dates)
+
+        if was_logging and stopped_logging:
+            return {
+                "risk": "mania",
+                "message": "You haven't been logging your medications recently. Missing doses can affect your stability — just something to check in on.",
+                "triggers": ["medications not logged recently"]
+            }
 
     return {"risk": "none", "message": "", "triggers": []}
 
@@ -747,7 +870,7 @@ def monthly_summary(authorization: Optional[str] = Header(None)):
         if not entries:
             return None
         scores = [combined_score(e) for e in entries]
-        states = [mood_state(s) for s in scores]
+        states = [classify_state(e) for e in entries]
         symptom_keys = ["mania", "depression", "racing_thoughts", "intrusive_thoughts", "irritability", "social_withdrawal", "psychosis"]
         symptom_counts = {k: sum(1 for e in entries if e.get(k)) for k in symptom_keys}
         state_counts = Counter(states)

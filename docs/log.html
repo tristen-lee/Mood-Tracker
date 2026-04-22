@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check In — Mood Tracker</title>
+    <title>Check In — Cairn</title>
     <link rel="stylesheet" href="style.css">
     <script src="theme.js"></script>
     <link rel="manifest" href="manifest.json">
@@ -21,86 +21,94 @@
       gtag("config", "G-8Z6BBES845");
     </script>
 </head>
-<body>
-    <nav class="top-nav">
-        <a href="dashboard.html" class="logo-link"><img src="assets/cairn.svg" alt="Cairn" class="logo logo-nav"></a>
-        
-        <a href="log.html" class="nav-link">Check In</a>
-        <a href="entries.html" class="nav-link">Entries</a>
-        <a href="analytics.html" class="nav-link">Analytics</a>
-        <a href="summary.html" class="nav-link">Summary</a>
-        <a href="achievements.html" class="nav-link">Achievements</a>
-        <a href="jasper.html" class="nav-link nav-link--jasper">✦ Jasper</a>
-    </nav>
+<body class="checkin-body">
 
-    <h1>Ready to begin?</h1>
+    <div class="checkin-wizard">
 
-    <form id="log-form">
-        <div class="slider-row">
-            <label>Mood Score <span class="slider-val" id="mood-val">5</span></label>
-            <input type="range" name="mood_score" min="1" max="10" value="5" oninput="document.getElementById('mood-val').textContent=this.value">
+        <div class="checkin-header">
+            <a href="dashboard.html" class="checkin-back-home">✕</a>
+            <div class="step-progress" id="step-progress"></div>
         </div>
 
-        <div class="slider-row">
-            <label>Hours of Sleep <span class="slider-val" id="sleep-val">7</span></label>
-            <input type="range" name="sleep" min="0" max="24" value="7" oninput="document.getElementById('sleep-val').textContent=this.value">
+        <!-- Step 1: Mood -->
+        <div class="step-screen active" id="step-0">
+            <p class="step-question">How are you feeling today?</p>
+            <div class="slider-row">
+                <label>Mood &nbsp;<span class="slider-val" id="mood-val">5</span><span class="slider-max"> / 10</span></label>
+                <input type="range" id="mood-slider" min="1" max="10" value="5">
+            </div>
         </div>
 
-        <div class="slider-row">
-            <label>Energy Level <span class="slider-val" id="energy-val">5</span></label>
-            <input type="range" name="energy_level" min="0" max="10" value="5" oninput="document.getElementById('energy-val').textContent=this.value">
+        <!-- Step 2: Sleep -->
+        <div class="step-screen" id="step-1">
+            <p class="step-question">How did you sleep?</p>
+            <div class="slider-row">
+                <label>Hours slept &nbsp;<span class="slider-val" id="sleep-val">7</span></label>
+                <input type="range" id="sleep-slider" min="0" max="24" value="7">
+            </div>
+            <p class="step-sub">Did you feel rested when you woke up?</p>
+            <div class="rested-toggle">
+                <button class="rested-btn" data-val="true">Yes, felt rested</button>
+                <button class="rested-btn" data-val="false">No, still tired</button>
+            </div>
         </div>
 
-        <div class="checkbox-row">
-            <label>Feeling extra elevated today?</label>
-            <input type="checkbox" name="mania">
-        </div>
-        <div class="checkbox-row">
-            <label>Feeling disconnected from reality?</label>
-            <input type="checkbox" name="psychosis">
-        </div>
-        <div class="checkbox-row">
-            <label>Feeling low or empty inside?</label>
-            <input type="checkbox" name="depression">
-        </div>
-        <div class="checkbox-row">
-            <label>Is your mind going to dark places?</label>
-            <input type="checkbox" name="intrusive_thoughts">
-        </div>
-        <div class="checkbox-row">
-            <label>Thoughts moving too fast to catch?</label>
-            <input type="checkbox" name="racing_thoughts">
-        </div>
-        <div class="checkbox-row">
-            <label>Feeling more irritable than usual?</label>
-            <input type="checkbox" name="irritability">
-        </div>
-        <div class="checkbox-row">
-            <label>Pulling away from people today?</label>
-            <input type="checkbox" name="social_withdrawal">
+        <!-- Step 3: Energy -->
+        <div class="step-screen" id="step-2">
+            <p class="step-question">What's your energy like?</p>
+            <div class="slider-row">
+                <label>Energy &nbsp;<span class="slider-val" id="energy-val">5</span><span class="slider-max"> / 10</span></label>
+                <input type="range" id="energy-slider" min="1" max="10" value="5">
+            </div>
         </div>
 
-        <div id="med-checkboxes"></div>
+        <!-- Step 4: Elevated symptoms -->
+        <div class="step-screen" id="step-3">
+            <p class="step-question">Anything elevated today?</p>
+            <p class="step-sub">Tap everything that applies. It's okay if nothing does.</p>
+            <div class="symptom-grid">
+                <button class="symptom-pill" data-field="mania">Feeling extra elevated</button>
+                <button class="symptom-pill" data-field="racing_thoughts">Thoughts racing</button>
+                <button class="symptom-pill" data-field="irritability">More irritable</button>
+                <button class="symptom-pill" data-field="anxiety">Anxious</button>
+            </div>
+        </div>
 
-        <label>Notes</label>
-        <textarea name="notes" rows="3" placeholder="Anything on your mind..."></textarea>
+        <!-- Step 5: Low symptoms -->
+        <div class="step-screen" id="step-4">
+            <p class="step-question">Anything weighing on you?</p>
+            <p class="step-sub">Tap everything that applies. It's okay if nothing does.</p>
+            <div class="symptom-grid">
+                <button class="symptom-pill" data-field="depression">Feeling low or empty</button>
+                <button class="symptom-pill" data-field="intrusive_thoughts">Dark or intrusive thoughts</button>
+                <button class="symptom-pill" data-field="social_withdrawal">Pulling away from people</button>
+                <button class="symptom-pill" data-field="psychosis">Disconnected from reality</button>
+            </div>
+        </div>
 
-        <button type="submit">All Done!</button>
-        <div id="form-message"></div>
-    </form>
+        <!-- Step 6: Medications + Notes -->
+        <div class="step-screen" id="step-5">
+            <p class="step-question">Almost done.</p>
+            <div id="med-section"></div>
+            <textarea id="notes-input" rows="3" placeholder="Anything on your mind... (optional)"></textarea>
+        </div>
 
-    <footer>
-        <a href="terms.html">Terms</a><span> · </span><a href="attributions.html">Attributions</a><span> · </span><a href="settings.html">Settings</a><span> · </span><a href="help.html">Help</a>
-    </footer>
+        <!-- Nav -->
+        <div class="step-nav">
+            <button id="btn-back" class="step-back" style="display:none">← Back</button>
+            <button id="btn-next" class="step-next">Next →</button>
+        </div>
+
+    </div>
 
     <div id="success-popup" class="modal-overlay hidden">
         <div class="success-modal">
-            <p id="success-mood"></p>
+            <p id="success-state"></p>
             <p id="success-text"></p>
             <a href="dashboard.html" class="onboarding-btn" style="margin-top:0.5rem">Go home</a>
         </div>
     </div>
 
-    <script src="log.js?v=6"></script>
+    <script src="log.js?v=7"></script>
 </body>
 </html>

@@ -2371,3 +2371,240 @@ footer span {
     --subtext: #5a5480;
     --nav-bg: #0c0e13;
 }
+
+/* === Check-in wizard === */
+
+.checkin-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+.checkin-wizard {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.checkin-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.checkin-back-home {
+    color: var(--text);
+    font-size: 1.1rem;
+    text-decoration: none;
+    opacity: 0.6;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.checkin-back-home:hover {
+    opacity: 1;
+}
+
+.step-progress {
+    display: flex;
+    gap: 6px;
+    flex: 1;
+    justify-content: center;
+}
+
+.step-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 0.2s, transform 0.2s;
+}
+
+.step-dot.active {
+    background: var(--heading);
+    transform: scale(1.3);
+}
+
+.step-dot.done {
+    background: var(--accent);
+}
+
+.step-screen {
+    display: none;
+    flex-direction: column;
+    gap: 1.25rem;
+    animation: fadeUp 0.25s ease;
+}
+
+.step-screen.active {
+    display: flex;
+}
+
+.step-question {
+    font-family: "Montserrat Alternates", sans-serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--heading);
+}
+
+.step-sub {
+    font-size: 0.9rem;
+    color: var(--text);
+    opacity: 0.7;
+}
+
+.symptom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+}
+
+.symptom-pill {
+    padding: 0.65rem 0.75rem;
+    border-radius: 2rem;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-family: "Quicksand", sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    text-align: center;
+}
+
+.symptom-pill:hover {
+    border-color: var(--accent);
+}
+
+.symptom-pill.selected {
+    background: var(--heading);
+    border-color: var(--heading);
+    color: var(--background);
+    font-weight: 600;
+}
+
+.rested-toggle {
+    display: flex;
+    gap: 0.6rem;
+}
+
+.rested-btn {
+    flex: 1;
+    padding: 0.65rem 0.75rem;
+    border-radius: 2rem;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-family: "Quicksand", sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    text-align: center;
+}
+
+.rested-btn:hover {
+    border-color: var(--accent);
+}
+
+.rested-btn.selected {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--background);
+    font-weight: 600;
+}
+
+.step-nav {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.step-back {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    font-family: "Quicksand", sans-serif;
+    font-size: 1rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+
+.step-back:hover {
+    border-color: var(--text);
+}
+
+.step-next {
+    background: var(--heading);
+    border: none;
+    color: var(--background);
+    font-family: "Quicksand", sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 0.6rem 1.5rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+
+.step-next:hover {
+    opacity: 0.85;
+}
+
+.step-next:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#notes-input {
+    width: 100%;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 0.75rem;
+    color: var(--text);
+    font-family: "Quicksand", sans-serif;
+    font-size: 0.95rem;
+    padding: 0.75rem;
+    resize: vertical;
+}
+
+#notes-input::placeholder {
+    color: var(--text);
+    opacity: 0.4;
+}
+
+#notes-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.success-modal {
+    background: var(--card);
+    border-radius: 1rem;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 340px;
+    width: 100%;
+}
+
+.success-modal p:first-child {
+    font-family: "Montserrat Alternates", sans-serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--heading);
+}
+
+.success-modal p:last-of-type {
+    color: var(--text);
+    font-size: 1rem;
+    opacity: 0.85;
+}
