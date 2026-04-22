@@ -815,23 +815,21 @@ footer a {
 
 /* === Top nav (inner pages) === */
 .top-nav {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
     padding: 0 0 1.5rem 0;
     border-bottom: 1px solid var(--nav-divider);
     margin-bottom: 1.5rem;
     position: relative;
 }
 
-.nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-left: auto;
+.top-nav .logo-link {
+    justify-self: start;
 }
 
 .hamburger-btn {
+    justify-self: center;
     background: none;
     border: none;
     color: var(--text);
@@ -842,6 +840,7 @@ footer a {
 }
 
 .nav-jasper-btn {
+    justify-self: end;
     color: var(--heading);
     text-decoration: none;
     font-family: "Quicksand", sans-serif;
@@ -864,6 +863,7 @@ footer a {
     flex-direction: column;
     z-index: 200;
     border-bottom: 1px solid var(--nav-divider);
+    grid-column: 1 / -1;
 }
 
 .nav-links.open {
