@@ -47,6 +47,10 @@
 }
 
 /* === Body === */
+html {
+    background-color: var(--background);
+}
+
 body {
     font-family: "Quicksand", sans-serif;
     background-color: var(--background);
