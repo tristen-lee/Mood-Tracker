@@ -687,16 +687,15 @@ def monthly_summary(authorization: Optional[str] = Header(None)):
 
     symptom_lines = ", ".join(f"{v} day(s) of {k.replace('_', ' ')}" for k, v in this_stats["symptom_counts"].items() if v > 0)
 
-    ai_prompt = f"""Write a warm, honest 3-4 sentence summary of this person's {month_name} based on their mental health data.
-Use their numbers naturally. Be caring but real — mention both the good and the hard parts.
-Write like a trusted friend who looked at their data, not a doctor. Plain text only — no markdown, no headings, no bullet points. Just a paragraph.
+    ai_prompt = f"""You're a close friend texting someone about their month. You looked at their mental health data and want to give them a real, honest reflection — not a clinical report.
 
-{month_name} data ({this_stats['entry_count']} check-ins):
-- Average mood score: {this_stats['avg_mood']}/10
-- Average sleep: {this_stats['avg_sleep']} hours
-- Average energy: {this_stats['avg_energy']}/10
-- Most common mood state: {this_stats['most_common_state']}
-- Symptoms: {symptom_lines if symptom_lines else 'none flagged'}
+Write 3-4 sentences. Sound like a real person, not an app. Use casual language. Don't list stats robotically — weave them in naturally. Acknowledge the hard stuff without being dramatic about it. End on something grounding, not forced-positive. Plain text only, no markdown, no bullet points.
+
+Their {month_name} ({this_stats['entry_count']} check-ins):
+- Mood averaged {this_stats['avg_mood']}/10, usually feeling {this_stats['most_common_state'].lower()}
+- Sleep averaged {this_stats['avg_sleep']} hours
+- Energy averaged {this_stats['avg_energy']}/10
+- Symptoms that showed up: {symptom_lines if symptom_lines else 'nothing flagged'}
 {comparison}"""
 
     try:
