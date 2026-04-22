@@ -208,7 +208,7 @@ label {
 .slider-val {
     font-family: "Montserrat Alternates", sans-serif;
     font-size: 1.1rem;
-    color: var(--accent);
+    color: var(--heading);
     font-weight: 600;
     min-width: 1.5rem;
     text-align: right;
@@ -231,7 +231,7 @@ input[type="range"]::-webkit-slider-thumb {
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: var(--accent);
+    background: var(--heading);
     cursor: pointer;
     transition: background 0.2s;
 }
@@ -279,8 +279,8 @@ input[type="checkbox"] {
 }
 
 input[type="checkbox"]:checked {
-    background-color: var(--accent);
-    border-color: var(--accent);
+    background-color: var(--heading);
+    border-color: var(--heading);
 }
 
 input[type="checkbox"]:checked::before {
@@ -299,11 +299,12 @@ input[type="checkbox"]:checked::before {
 footer {
     padding: 2rem 0 0.5rem 0;
     font-size: 0.75rem;
-    color: var(--accent);
+    color: var(--text);
+    opacity: 0.5;
 }
 
 footer a {
-    color: var(--accent);
+    color: var(--text);
 }
 
 /* === Form messages === */
@@ -1221,7 +1222,7 @@ footer span {
 
 .med-section-label {
     font-size: 0.85rem;
-    color: var(--accent);
+    color: var(--heading);
     font-weight: 600;
     margin-bottom: 0.25rem;
 }
@@ -1277,7 +1278,7 @@ footer span {
 
 .summary-ai-card {
     background: var(--card);
-    border-left: 3px solid var(--accent);
+    border-left: 3px solid var(--heading);
     border-radius: 0.75rem;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
@@ -2237,7 +2238,7 @@ footer span {
 /* === Rose Quartz theme === */
 
 [data-theme="rose-quartz"] {
-    --bg: #2d1f26;
+    --background: #2d1f26;
     --card: #3d2a33;
     --heading: #f4a7b9;
     --subheading: #f0dde4;
@@ -2249,7 +2250,7 @@ footer span {
 /* === Amethyst theme === */
 
 [data-theme="amethyst"] {
-    --bg: #1a1428;
+    --background: #1a1428;
     --card: #251d38;
     --heading: #c084fc;
     --subheading: #e9d5ff;
@@ -2261,7 +2262,7 @@ footer span {
 /* === Obsidian theme === */
 
 [data-theme="obsidian"] {
-    --bg: #0a0a0a;
+    --background: #0a0a0a;
     --card: #111111;
     --heading: #22d3c8;
     --subheading: #f0f0f0;
@@ -2273,7 +2274,7 @@ footer span {
 /* === Red Jasper theme === */
 
 [data-theme="red-jasper"] {
-    --bg: #2a1a14;
+    --background: #2a1a14;
     --card: #3a2318;
     --heading: #c0622a;
     --subheading: #f5ede8;
@@ -2285,11 +2286,73 @@ footer span {
 /* === Raw Stone theme === */
 
 [data-theme="raw-stone"] {
-    --bg: #1f2422;
+    --background: #1f2422;
     --card: #2a3028;
     --heading: #7d9e6a;
     --subheading: #c8d4c2;
     --text: #c8d4c2;
     --subtext: #6e8068;
     --nav-bg: #181e1c;
+}
+
+/* === Rainbow Obsidian theme === */
+
+[data-theme="rainbow-obsidian"] {
+    --background: #0d0d12;
+    --card: #16161f;
+    --heading: #e0e0ff;
+    --subheading: #e0e0f0;
+    --text: #d8d8ec;
+    --subtext: #7070a0;
+    --nav-bg: #08080d;
+}
+
+@keyframes pride-cycle {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+[data-theme="rainbow-obsidian"] h1 {
+    background: linear-gradient(90deg, #FF0018, #FFA52C, #FFFF41, #008018, #0000F9, #86007D, #FF0018);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: pride-cycle 5s linear infinite;
+}
+
+/* === Owyhee Blue Opal theme === */
+
+[data-theme="owyhee-blue-opal"] {
+    --background: #0e1a2b;
+    --card: #162437;
+    --heading: #7ec8e3;
+    --subheading: #c5dff0;
+    --text: #c5dff0;
+    --subtext: #4a7a99;
+    --nav-bg: #090f1a;
+}
+
+/* === Oregon Sunstone theme === */
+
+[data-theme="oregon-sunstone"] {
+    --background: #261500;
+    --card: #362008;
+    --heading: #e8913a;
+    --subheading: #f5e0c0;
+    --text: #f5e0c0;
+    --subtext: #8a5020;
+    --nav-bg: #180e00;
+}
+
+/* === Thunderegg theme === */
+
+[data-theme="thunderegg"] {
+    --background: #1e1a16;
+    --card: #28231e;
+    --heading: #c47842;
+    --subheading: #e8d5c0;
+    --text: #e8d5c0;
+    --subtext: #6a5040;
+    --nav-bg: #141210;
 }
