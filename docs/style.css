@@ -1618,7 +1618,7 @@ footer span {
 
 .streak-crystals {
     font-size: 0.88rem;
-    color: #fff;
+    color: var(--text);
     margin-bottom: 1.25rem;
 }
 

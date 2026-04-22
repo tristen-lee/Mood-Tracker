@@ -22,7 +22,7 @@ async function load() {
     const me = await meRes.json();
     const streak = me.streak || 0;
 
-    document.getElementById("crystal-balance").textContent = `🟣 ${me.crystals || 0} Amethyst`;
+    document.getElementById("crystal-balance").textContent = `🟣 ${me.crystals || 0} Crystals`;
     document.getElementById("streak-display").textContent = `🔥 ${streak}-day streak`;
 
     // Crystal achievements
