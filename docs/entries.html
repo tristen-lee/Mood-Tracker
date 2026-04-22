@@ -24,19 +24,21 @@
 <body>
     <nav class="top-nav">
         <a href="dashboard.html" class="logo-link"><img src="assets/cairn.svg" alt="Cairn" class="logo logo-nav"></a>
-        <button class="hamburger-btn" id="hamburger-btn" aria-label="Menu">☰</button>
+        <div class="nav-actions">
+            <button class="hamburger-btn" id="hamburger-btn" aria-label="Menu">☰</button>
+            <a href="jasper.html" class="nav-jasper-btn">✦ Jasper</a>
+        </div>
         <div class="nav-links" id="nav-links">
             <a href="log.html" class="nav-link">Check In</a>
             <a href="entries.html" class="nav-link">Entries</a>
             <a href="analytics.html" class="nav-link">Analytics</a>
             <a href="summary.html" class="nav-link">Summary</a>
             <a href="achievements.html" class="nav-link">Achievements</a>
-            <a href="jasper.html" class="nav-link nav-link--jasper">✦ Jasper</a>
+            <a href="settings.html" class="nav-link">Settings</a>
         </div>
     </nav>
 
     <h1>My Entries</h1>
-    <button class="export-btn" onclick="exportCSV()">Download for my therapist</button>
 
     <div id="entries-list">
         <!-- entries  -->
@@ -74,6 +76,8 @@
             </form>
         </div>
     </div>
+    
+    <button class="export-btn" onclick="exportCSV()">Download for my therapist</button>
 
     <footer>
         <a href="terms.html">Terms</a><span> · </span><a href="attributions.html">Attributions</a><span> · </span><a href="settings.html">Settings</a><span> · </span><a href="help.html">Help</a>
