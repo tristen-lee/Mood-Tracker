@@ -159,7 +159,7 @@ async function loadEntries() {
                             <button class="delete-btn" onclick="deleteEntry('${deleteDate}')">Delete</button>
                         </div>
                     </div>
-                    <p>Mood: ${entry.mood_score}/10 &nbsp;|&nbsp; Sleep: ${entry.sleep}h &nbsp;|&nbsp; Energy: ${entry.energy_level}/10</p>
+                    <p>${entry.mood_state ? `<span class="entry-state">${entry.mood_state}</span> &nbsp;·&nbsp; ` : ""}Mood: ${entry.mood_score}/10 &nbsp;|&nbsp; Sleep: ${entry.sleep}h &nbsp;|&nbsp; Energy: ${entry.energy_level}/10</p>
                     ${flags.length ? `<p class="entry-flags">${flags.join(" · ")}</p>` : ""}
                     ${entry.medications_taken && entry.medications_taken.length ? `<p class="entry-flags">💊 ${entry.medications_taken.join(" · ")}</p>` : ""}
                     ${entry.notes ? `<p class="entry-notes">${entry.notes}</p>` : ""}

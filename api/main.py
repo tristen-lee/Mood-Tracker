@@ -116,6 +116,10 @@ app = FastAPI()
 def health_check():
     return {"status": "ok"}
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -451,6 +455,7 @@ def get_entries(authorization: Optional[str] = Header(None)):
         med_map[date].append(name)
     for e in entries:
         e["medications_taken"] = med_map.get(e["timestamp"].date(), [])
+        e["mood_state"] = classify_state(e)
     return entries
 
 @app.post("/entries")

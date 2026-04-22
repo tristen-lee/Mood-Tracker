@@ -389,6 +389,11 @@ footer a {
     opacity: 0.6;
 }
 
+.entry-state {
+    font-weight: 700;
+    color: var(--heading);
+}
+
 /* === Analytics stat cards (3-column row) === */
 .analytics-stats {
     display: grid;
@@ -2557,8 +2562,11 @@ footer span {
 .step-screen {
     display: none;
     flex-direction: column;
+    align-items: center;
     gap: 1.25rem;
     animation: fadeUp 0.25s ease;
+    text-align: center;
+    width: 100%;
 }
 
 .step-screen.active {
@@ -2582,6 +2590,7 @@ footer span {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.6rem;
+    width: 100%;
 }
 
 .symptom-pill {
@@ -2614,6 +2623,7 @@ footer span {
 .rested-toggle {
     display: flex;
     gap: 0.6rem;
+    width: 100%;
 }
 
 .rested-btn {

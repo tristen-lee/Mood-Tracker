@@ -1,5 +1,7 @@
 const API = "https://mood-tracker-11bv.onrender.com";
 
+fetch(`${API}/health`).catch(() => {});
+
 function scrollToAuth() {
     showTab("register");
     document.getElementById("auth-section").scrollIntoView({ behavior: "smooth", block: "center" });
