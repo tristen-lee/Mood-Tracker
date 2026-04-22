@@ -1117,6 +1117,7 @@ footer span {
 
 .theme-toggle {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.5rem;
 }
 
@@ -2336,23 +2337,23 @@ footer span {
 /* === Oregon Sunstone theme === */
 
 [data-theme="oregon-sunstone"] {
-    --background: #261500;
-    --card: #362008;
-    --heading: #e8913a;
-    --subheading: #f5e0c0;
-    --text: #f5e0c0;
-    --subtext: #8a5020;
-    --nav-bg: #180e00;
+    --background: #1a1200;
+    --card: #261c00;
+    --heading: #f5c842;
+    --subheading: #fef0b0;
+    --text: #fef0b0;
+    --subtext: #a08020;
+    --nav-bg: #100c00;
 }
 
 /* === Thunderegg theme === */
 
 [data-theme="thunderegg"] {
-    --background: #1e1a16;
-    --card: #28231e;
-    --heading: #c47842;
-    --subheading: #e8d5c0;
-    --text: #e8d5c0;
-    --subtext: #6a5040;
-    --nav-bg: #141210;
+    --background: #12141a;
+    --card: #1c1f28;
+    --heading: #9b8fd4;
+    --subheading: #dcd8f0;
+    --text: #dcd8f0;
+    --subtext: #5a5480;
+    --nav-bg: #0c0e13;
 }
