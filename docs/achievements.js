@@ -67,17 +67,20 @@ async function load() {
 }
 
 const THEMES = [
-    { id: "dark",      name: "Dark",        emoji: "🌑", description: "Default dark mode.",         unlocked: true },
-    { id: "light",     name: "Light",       emoji: "☀️", description: "Default light mode.",        unlocked: true },
-    { id: "raw-stone",   name: "Raw Stone",   emoji: "🪨", description: "Earn the Raw Stone crystal to unlock.", unlocked: false, achievement: "raw_stone" },
-    { id: "rose-quartz", name: "Rose Quartz", emoji: "🩷", description: "Earn the Rose Quartz crystal to unlock.", unlocked: false, achievement: "rose_quartz" },
-    { id: "amethyst",    name: "Amethyst",    emoji: "🟣", description: "Earn the Amethyst crystal to unlock.",  unlocked: false, achievement: "amethyst" },
-    { id: "obsidian",    name: "Obsidian",    emoji: "⚫", description: "Earn the Obsidian crystal to unlock.",    unlocked: false, achievement: "obsidian" },
-    { id: "red-jasper",  name: "Red Jasper",  emoji: "🔴", description: "Earn the Red Jasper crystal to unlock.",  unlocked: false, achievement: "red_jasper" },
-    { id: "obsidian",  name: "Obsidian",    emoji: "⚫", description: "Coming soon.",               unlocked: false, comingSoon: true },
-    { id: "sunset",    name: "Sunset",      emoji: "🌅", description: "Coming soon to the shop.",   unlocked: false, comingSoon: true },
-    { id: "ocean",     name: "Ocean",       emoji: "🌊", description: "Coming soon to the shop.",   unlocked: false, comingSoon: true },
-    { id: "forest",    name: "Forest",      emoji: "🌲", description: "Coming soon to the shop.",   unlocked: false, comingSoon: true },
+    { id: "dark",             name: "Dark",             emoji: "🌑", description: "Default dark mode.",                        unlocked: true },
+    { id: "light",            name: "Light",            emoji: "☀️",  description: "Default light mode.",                       unlocked: true },
+    { id: "raw-stone",        name: "Raw Stone",        emoji: "🪨", description: "Earn the Raw Stone crystal to unlock.",      unlocked: false, achievement: "raw_stone" },
+    { id: "rose-quartz",      name: "Rose Quartz",      emoji: "🩷", description: "Earn the Rose Quartz crystal to unlock.",    unlocked: false, achievement: "rose_quartz" },
+    { id: "amethyst",         name: "Amethyst",         emoji: "🟣", description: "Earn the Amethyst crystal to unlock.",       unlocked: false, achievement: "amethyst" },
+    { id: "red-jasper",       name: "Red Jasper",       emoji: "🔴", description: "Earn the Red Jasper crystal to unlock.",     unlocked: false, achievement: "red_jasper" },
+    { id: "rainbow-obsidian", name: "Rainbow Obsidian", emoji: "🌈", description: "Earn the Obsidian crystal to unlock.",       unlocked: false, achievement: "obsidian" },
+    { id: "clear-quartz",     name: "Clear Quartz",     emoji: "🔷", description: "Log 100 check-ins to unlock.",               unlocked: false, achievement: "century" },
+    { id: "owyhee-blue-opal", name: "Blue Opal",        emoji: "💙", description: "Unlocked — enjoy.",                          unlocked: true },
+    { id: "oregon-sunstone",  name: "Sunstone",         emoji: "🌅", description: "Unlocked — enjoy.",                          unlocked: true },
+    { id: "thunderegg",       name: "Thunderegg",       emoji: "🥚", description: "Unlocked — enjoy.",                          unlocked: true },
+    { id: "sunset",           name: "Sunset",           emoji: "🌇", description: "Coming soon to the shop.",                   unlocked: false, comingSoon: true },
+    { id: "ocean",            name: "Ocean",            emoji: "🌊", description: "Coming soon to the shop.",                   unlocked: false, comingSoon: true },
+    { id: "forest",           name: "Forest",           emoji: "🌲", description: "Coming soon to the shop.",                   unlocked: false, comingSoon: true },
 ];
 
 function renderThemes(earnedAchievements) {
