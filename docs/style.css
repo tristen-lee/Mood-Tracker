@@ -2482,52 +2482,13 @@ footer span {
 /* === Clear Quartz theme === */
 
 [data-theme="clear-quartz"] {
-    --background: #f7f9fc;
-    --card: #ffffff;
-    --heading: #5a9abf;
-    --subheading: #2c3e50;
-    --text: #2c3e50;
-    --subtext: #7a9ab0;
-    --nav-bg: #edf2f7;
-    --border: #c8d8e4;
-    --track: #c8d8e4;
-    --card-hover: #edf2f7;
-    --divider: rgba(0,0,0,0.07);
-    --nav-divider: rgba(0,0,0,0.08);
-}
-
-/* === Labradorite theme === */
-
-[data-theme="labradorite"] {
-    --background: #e8eff2;
-    --card: #f4f8fa;
-    --heading: #2a7a8a;
-    --subheading: #1a3540;
-    --text: #1a3540;
-    --subtext: #5a8a98;
-    --nav-bg: #dce8ec;
-    --border: #a8c8d4;
-    --track: #a8c8d4;
-    --card-hover: #dce8ec;
-    --divider: rgba(0,0,0,0.07);
-    --nav-divider: rgba(0,0,0,0.08);
-}
-
-/* === Moonstone theme === */
-
-[data-theme="moonstone"] {
-    --background: #f0f2f8;
-    --card: #fafbff;
-    --heading: #4a6fc0;
-    --subheading: #1a2040;
-    --text: #1a2040;
-    --subtext: #7080b8;
-    --nav-bg: #e2e6f5;
-    --border: #b8c4e0;
-    --track: #b8c4e0;
-    --card-hover: #e2e6f5;
-    --divider: rgba(0,0,0,0.07);
-    --nav-divider: rgba(0,0,0,0.08);
+    --background: #0d1117;
+    --card: #161b22;
+    --heading: #e2e8f0;
+    --subheading: #cbd5e1;
+    --text: #cbd5e1;
+    --subtext: #64748b;
+    --nav-bg: #0d1117;
 }
 
 /* === Check-in wizard === */
