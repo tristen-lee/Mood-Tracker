@@ -120,15 +120,23 @@ if (pending) {
     document.body.appendChild(overlay);
 }
 
+const episodeDismissed = localStorage.getItem("episodeWarningDismissed");
+const today = new Date().toDateString();
+
 fetch("https://mood-tracker-11bv.onrender.com/analytics/episode-risk", {
     headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
 })
 .then(r => r.json())
 .then(data => {
     if (!data.risk || data.risk === "none") return;
+    if (episodeDismissed === today) return;
     const colors = { mania: "#b084e8", depression: "#6aafd6", mixed: "#e06c75" };
     const el = document.getElementById("episode-warning");
-    el.innerHTML = `<div class="warning-card" style="border-color:${colors[data.risk]}">${data.message}</div>`;
+    el.innerHTML = `
+        <div class="warning-card" style="border-color:${colors[data.risk]}">
+            <span>${data.message}</span>
+            <button class="nudge-dismiss" onclick="this.closest('.warning-card').remove(); localStorage.setItem('episodeWarningDismissed', '${today}')">✕</button>
+        </div>`;
 })
 .catch(() => {});
 

@@ -24,6 +24,19 @@ function delta(current, previous, higher_is_better = true) {
     return `<span class="${cls}">${arrow} ${Math.abs(diff)}</span>`;
 }
 
+document.getElementById("summary-content").innerHTML = `
+    <div class="skeleton-card">
+        <div class="skeleton skeleton-line skeleton-line--short" style="height:20px"></div>
+        <div class="skeleton skeleton-line skeleton-line--full"></div>
+        <div class="skeleton skeleton-line skeleton-line--med"></div>
+        <div class="skeleton skeleton-line skeleton-line--full"></div>
+    </div>
+    <div class="skeleton-card">
+        <div class="skeleton skeleton-line skeleton-line--med"></div>
+        <div class="skeleton skeleton-line skeleton-line--full"></div>
+        <div class="skeleton skeleton-line skeleton-line--short"></div>
+    </div>`;
+
 fetch(`${API}/analytics/monthly-summary`, {
     headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
 })
