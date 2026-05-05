@@ -113,17 +113,10 @@ async function loadAnalytics() {
     document.getElementById("streak").innerHTML        = skeletonStatCard();
 
     try {
-        const [recentRes, avgRes, streakRes] = await Promise.all([
-            fetch(`${API}/analytics`,         { headers: { Authorization: "Bearer " + token() } }),
-            fetch(`${API}/analytics/average`, { headers: { Authorization: "Bearer " + token() } }),
-            fetch(`${API}/analytics/streak`,  { headers: { Authorization: "Bearer " + token() } }),
-        ]);
+        const res     = await fetch(`${API}/analytics/summary`, { headers: { Authorization: "Bearer " + token() } });
+        const summary = await res.json();
 
-        const recent = await recentRes.json();
-        const avg    = await avgRes.json();
-        const streak = await streakRes.json();
-
-        if (recent.message) {
+        if (summary.message) {
             document.getElementById("mood-state").innerHTML = "<p>No entries yet. Go check in!</p>";
             return;
         }
@@ -131,19 +124,19 @@ async function loadAnalytics() {
         document.getElementById("mood-state").innerHTML = `
             <div class="analytics-card">
                 <h2>Current Mood State</h2>
-                <p class="big-stat">${recent.mood_state}</p>
+                <p class="big-stat">${summary.mood_state}</p>
             </div>`;
 
         document.getElementById("average-score").innerHTML = `
             <div class="analytics-card">
                 <h2>All-Time Average</h2>
-                <p class="big-stat">${avg.mood_state}</p>
+                <p class="big-stat">${summary.average_mood_state}</p>
             </div>`;
 
         document.getElementById("streak").innerHTML = `
             <div class="analytics-card">
                 <h2>Check-In Streak</h2>
-                <p class="big-stat">${streak.streak} ${streak.streak === 1 ? "day" : "days"}</p>
+                <p class="big-stat">${summary.streak} ${summary.streak === 1 ? "day" : "days"}</p>
             </div>`;
 
         document.getElementById("chart").innerHTML =
@@ -160,22 +153,16 @@ async function loadAnalytics() {
 }
 
 async function loadCharts() {
-    const d = currentDays;
-    const headers = { Authorization: "Bearer " + token() };
+    const d      = currentDays;
+    const suffix = d > 0 ? `?days=${d}` : "";
+    const res    = await fetch(`${API}/analytics/charts${suffix}`, { headers: { Authorization: "Bearer " + token() } });
+    const cd     = await res.json();
 
-    const [byDateRes, byDayRes, distRes, scatterRes, sleepRes] = await Promise.all([
-        fetch(`${API}/analytics/by-date${q(d)}`,           { headers }),
-        fetch(`${API}/analytics/by-day${q(d)}`,            { headers }),
-        fetch(`${API}/analytics/mood-distribution${q(d)}`, { headers }),
-        fetch(`${API}/analytics/sleep-vs-mood${q(d)}`,     { headers }),
-        fetch(`${API}/analytics/sleep-over-time${q(d)}`,   { headers }),
-    ]);
-
-    const byDate  = await byDateRes.json();
-    const byDay   = await byDayRes.json();
-    const dist    = await distRes.json();
-    const scatter = await scatterRes.json();
-    const sleep   = await sleepRes.json();
+    const byDate  = cd.by_date;
+    const byDay   = cd.by_day;
+    const dist    = cd.distribution;
+    const scatter = cd.scatter;
+    const sleep   = cd.sleep;
 
     makeChart("c-mood", "line", {
         labels: byDate.map(e => formatDate(e.timestamp)),

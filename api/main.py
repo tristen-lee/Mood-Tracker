@@ -467,19 +467,28 @@ def create_entry(entry: Entry, authorization: Optional[str] = Header(None)):
         "SELECT id FROM entries WHERE user_id = %s AND timestamp::date = CURRENT_DATE",
         (user_id,)
     )
-    if cur.fetchone():
-        conn.close()
-        raise HTTPException(status_code=409, detail="You've already checked in today. Go to My Entries to edit it.")
-    cur.execute("""
-        INSERT INTO entries (user_id, mood_score, sleep, energy_level, mania, psychosis,
-            depression, intrusive_thoughts, racing_thoughts, irritability, social_withdrawal,
-            anxiety, felt_rested, notes)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-    """, (user_id, entry.mood_score, entry.sleep, entry.energy_level, entry.mania,
-          entry.psychosis, entry.depression, entry.intrusive_thoughts, entry.racing_thoughts,
-          entry.irritability, entry.social_withdrawal, entry.anxiety, entry.felt_rested,
-          entry.notes))
+    existing = cur.fetchone()
     entry_date = datetime.now().date()
+    if existing:
+        cur.execute("""
+            UPDATE entries SET mood_score=%s, sleep=%s, energy_level=%s, mania=%s, psychosis=%s,
+                depression=%s, intrusive_thoughts=%s, racing_thoughts=%s, irritability=%s,
+                social_withdrawal=%s, anxiety=%s, felt_rested=%s, notes=%s
+            WHERE user_id=%s AND timestamp::date=CURRENT_DATE
+        """, (entry.mood_score, entry.sleep, entry.energy_level, entry.mania, entry.psychosis,
+              entry.depression, entry.intrusive_thoughts, entry.racing_thoughts, entry.irritability,
+              entry.social_withdrawal, entry.anxiety, entry.felt_rested, entry.notes, user_id))
+        cur.execute("DELETE FROM entry_medications WHERE user_id=%s AND date=%s", (user_id, entry_date))
+    else:
+        cur.execute("""
+            INSERT INTO entries (user_id, mood_score, sleep, energy_level, mania, psychosis,
+                depression, intrusive_thoughts, racing_thoughts, irritability, social_withdrawal,
+                anxiety, felt_rested, notes)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (user_id, entry.mood_score, entry.sleep, entry.energy_level, entry.mania,
+              entry.psychosis, entry.depression, entry.intrusive_thoughts, entry.racing_thoughts,
+              entry.irritability, entry.social_withdrawal, entry.anxiety, entry.felt_rested,
+              entry.notes))
     if entry.medications_taken:
         for med_id in entry.medications_taken:
             cur.execute(
@@ -703,6 +712,50 @@ def get_sleep_over_time(days: int = 0, authorization: Optional[str] = Header(Non
         cutoff = datetime.now().date() - timedelta(days=days)
         data = [e for e in data if e["timestamp"].date() >= cutoff]
     return [{"timestamp": e["timestamp"].isoformat(), "sleep": e["sleep"]} for e in data]
+
+@app.get("/analytics/summary")
+def get_analytics_summary(authorization: Optional[str] = Header(None)):
+    user_id = get_user_id(authorization)
+    data = fetch_entries(user_id)
+    if not data:
+        return {"message": "No entries yet."}
+    recent = data[-1]
+    avg = sum(combined_score(e) for e in data) / len(data)
+    dates = sorted(set(e["timestamp"].date() for e in data))
+    streak = 1
+    for prev, curr in zip(dates, dates[1:]):
+        if curr - prev == timedelta(days=1):
+            streak += 1
+        else:
+            streak = 1
+    return {
+        "mood_state": classify_state(recent),
+        "score": combined_score(recent),
+        "average_score": round(avg, 2),
+        "average_mood_state": mood_state(avg),
+        "streak": streak,
+    }
+
+@app.get("/analytics/charts")
+def get_charts(days: int = 0, authorization: Optional[str] = Header(None)):
+    user_id = get_user_id(authorization)
+    data = fetch_entries(user_id)
+    if days > 0:
+        cutoff = datetime.now().date() - timedelta(days=days)
+        filtered = [e for e in data if e["timestamp"].date() >= cutoff]
+    else:
+        filtered = data
+    day_scores = defaultdict(list)
+    for e in filtered:
+        day_scores[e["timestamp"].strftime("%A")].append(combined_score(e))
+    order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    return {
+        "by_date":      [{"timestamp": e["timestamp"].isoformat(), "mood_score": e["mood_score"]} for e in filtered],
+        "by_day":       [{"day": d, "average": round(sum(day_scores[d]) / len(day_scores[d]), 2)} for d in order if d in day_scores],
+        "distribution": [{"state": s, "count": c} for s, c in Counter(classify_state(e) for e in filtered).items()],
+        "scatter":      [{"sleep": e["sleep"], "score": combined_score(e)} for e in filtered],
+        "sleep":        [{"timestamp": e["timestamp"].isoformat(), "sleep": e["sleep"]} for e in filtered],
+    }
 
 @app.get("/analytics/episode-risk")
 def get_episode_risk(authorization: Optional[str] = Header(None)):
