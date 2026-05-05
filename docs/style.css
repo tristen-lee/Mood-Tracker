@@ -704,6 +704,8 @@ footer a {
     flex-shrink: 0;
 }
 .icon--lg { width: 2rem; height: 2rem; }
+.icon-img { width: 1.1em; height: 1.1em; vertical-align: middle; flex-shrink: 0; }
+.icon-img--lg { width: 2rem; height: 2rem; }
 .icon-log          { -webkit-mask-image: url(assets/icons/log.svg);          mask-image: url(assets/icons/log.svg); }
 .icon-entries      { -webkit-mask-image: url(assets/icons/entries.svg);      mask-image: url(assets/icons/entries.svg); }
 .icon-analytics    { -webkit-mask-image: url(assets/icons/analytics.svg);    mask-image: url(assets/icons/analytics.svg); }

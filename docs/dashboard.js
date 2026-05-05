@@ -70,7 +70,7 @@ fetch("https://mood-tracker-11bv.onrender.com/me", {
 .then(data => {
     if (data.streak > 0 || data.crystals > 0) {
         const el = document.getElementById("streak-crystals");
-        if (el) el.innerHTML = `<span class="icon icon-flame"></span> ${data.streak}-day streak &nbsp;·&nbsp; <img src="assets/achievements/crystal_currency.svg" style="width:1.1em;height:1.1em;vertical-align:middle;"> ${data.crystals} crystals`;
+        if (el) el.innerHTML = `<img src="assets/icons/flame.svg" class="icon-img"> ${data.streak}-day streak &nbsp;·&nbsp; <img src="assets/achievements/crystal_currency.svg" class="icon-img"> ${data.crystals} crystals`;
     }
 })
 .catch(() => {});
