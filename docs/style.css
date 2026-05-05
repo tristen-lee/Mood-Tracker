@@ -2236,6 +2236,12 @@ footer span {
     line-height: 1;
 }
 
+.ach-svg-icon {
+    width: 3rem;
+    height: 3rem;
+    object-fit: contain;
+}
+
 .ach-name {
     font-size: 0.85rem;
     font-weight: 700;

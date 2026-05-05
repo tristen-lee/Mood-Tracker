@@ -2,6 +2,21 @@ const API = "https://mood-tracker-11bv.onrender.com";
 const token = localStorage.getItem("token");
 if (!token) window.location.href = "home.html";
 
+const CRYSTAL_SVGS = {
+    raw_stone:  "assets/achievements/raw_stone.svg",
+    amethyst:   "assets/achievements/amethyst.svg",
+    rose_quartz:"assets/achievements/crystal_heart.svg",
+    obsidian:   "assets/achievements/obsidian.svg",
+    red_jasper: "assets/achievements/red_jasper.svg",
+    century:    "assets/achievements/clear_quartz.svg",
+};
+
+function achIcon(ach) {
+    const svg = CRYSTAL_SVGS[ach.id];
+    if (svg) return `<img src="${svg}" class="ach-svg-icon" alt="${ach.name}">`;
+    return `<div class="ach-emoji">${ach.emoji}</div>`;
+}
+
 const CAIRN_BADGES = [
     { streak: 3,   emoji: "🪨",   name: "Pebble",       description: "3-day streak" },
     { streak: 7,   emoji: "🪨🪨", name: "Stone",         description: "7-day streak" },
@@ -11,7 +26,19 @@ const CAIRN_BADGES = [
     { streak: 100, emoji: "✨",   name: "Ancient Cairn", description: "100-day streak" },
 ];
 
+function skeletonAchCard() {
+    return `<div class="ach-card skeleton-card" style="gap:0.5rem">
+        <div class="skeleton skeleton-line" style="width:3rem;height:3rem;border-radius:0.5rem"></div>
+        <div class="skeleton skeleton-line skeleton-line--med"></div>
+        <div class="skeleton skeleton-line skeleton-line--full"></div>
+    </div>`;
+}
+
 async function load() {
+    ["crystal-grid","cairn-grid","themes-grid"].forEach(id => {
+        document.getElementById(id).innerHTML = [1,2,3,4].map(skeletonAchCard).join("");
+    });
+
     const [achRes, meRes] = await Promise.all([
         fetch(`${API}/achievements`, { headers: { Authorization: `Bearer ${token}` } }),
         fetch(`${API}/me`,           { headers: { Authorization: `Bearer ${token}` } }),
@@ -31,7 +58,7 @@ async function load() {
         const card = document.createElement("div");
         card.className = `ach-card ${ach.earned ? "ach-card--earned" : "ach-card--locked"}`;
         card.innerHTML = `
-            <div class="ach-emoji">${ach.emoji}</div>
+            ${achIcon(ach)}
             <div class="ach-name">${ach.name}</div>
             <div class="ach-desc">${ach.description}</div>
             ${ach.earned ? `<div class="ach-badge">✓ Earned</div>` : `<div class="ach-locked-label">Locked</div>`}
