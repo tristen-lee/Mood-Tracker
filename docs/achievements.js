@@ -54,6 +54,7 @@ async function load() {
 
     // Crystal achievements
     const crystalGrid = document.getElementById("crystal-grid");
+    crystalGrid.innerHTML = "";
     achievements.forEach(ach => {
         const card = document.createElement("div");
         card.className = `ach-card ${ach.earned ? "ach-card--earned" : "ach-card--locked"}`;
@@ -76,6 +77,7 @@ async function load() {
 
     // Cairn badges
     const cairnGrid = document.getElementById("cairn-grid");
+    cairnGrid.innerHTML = "";
     CAIRN_BADGES.forEach(badge => {
         const earned = streak >= badge.streak;
         const card = document.createElement("div");
