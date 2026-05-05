@@ -70,7 +70,7 @@ fetch("https://mood-tracker-11bv.onrender.com/me", {
 .then(data => {
     if (data.streak > 0 || data.crystals > 0) {
         const el = document.getElementById("streak-crystals");
-        if (el) el.innerHTML = `🔥 ${data.streak}-day streak &nbsp;·&nbsp; ✨ ${data.crystals} crystals`;
+        if (el) el.innerHTML = `<span class="icon icon-flame"></span> ${data.streak}-day streak &nbsp;·&nbsp; <img src="assets/achievements/crystal_currency.svg" style="width:1.1em;height:1.1em;vertical-align:middle;"> ${data.crystals} crystals`;
     }
 })
 .catch(() => {});
@@ -135,7 +135,7 @@ fetch("https://mood-tracker-11bv.onrender.com/analytics/episode-risk", {
     el.innerHTML = `
         <div class="warning-card" style="border-color:${colors[data.risk]}">
             <span>${data.message}</span>
-            <button class="nudge-dismiss" onclick="this.closest('.warning-card').remove(); localStorage.setItem('episodeWarningDismissed', '${today}')">✕</button>
+            <button class="nudge-dismiss" onclick="this.closest('.warning-card').remove(); localStorage.setItem('episodeWarningDismissed', '${today}')"><span class="icon icon-x"></span></button>
         </div>`;
 })
 .catch(() => {});
