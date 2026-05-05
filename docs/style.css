@@ -691,7 +691,7 @@ footer a {
     display: inline-block;
     width: 1.1em;
     height: 1.1em;
-    background-color: currentColor;
+    background-color: var(--text);
     -webkit-mask-size: contain;
     mask-size: contain;
     -webkit-mask-repeat: no-repeat;
