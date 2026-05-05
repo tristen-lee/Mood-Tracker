@@ -29,12 +29,12 @@ const randomGreeting = [
 const randNum = Math.floor(Math.random() * randomGreeting.length);
 
 const images = [
-    "assets/woman_meditating.svg",
-    "assets/Insomnia-rafiki.svg",
-    "assets/Contemplating-rafiki.svg",
-    "assets/mental-health-not-css.svg",
-    "assets/blue-monday-not-css.svg",
-    "assets/Healthy habit-pana.svg",
+    "assets/illustrations/woman_meditating.svg",
+    "assets/illustrations/Insomnia-rafiki.svg",
+    "assets/illustrations/Contemplating-rafiki.svg",
+    "assets/illustrations/mental-health-not-css.svg",
+    "assets/illustrations/blue-monday-not-css.svg",
+    "assets/illustrations/Healthy habit-pana.svg",
 ];
 const randImg = Math.floor(Math.random() * images.length);
 document.getElementById("dashboard-image").setAttribute("data", images[randImg]);
