@@ -39,13 +39,14 @@ async function load() {
         document.getElementById(id).innerHTML = [1,2,3,4].map(skeletonAchCard).join("");
     });
 
+    try {
     const [achRes, meRes] = await Promise.all([
         fetch(`${API}/achievements`, { headers: { Authorization: `Bearer ${token}` } }),
         fetch(`${API}/me`,           { headers: { Authorization: `Bearer ${token}` } }),
     ]);
 
     const achData = await achRes.json();
-    const achievements = achData.achievements;
+    const achievements = achData.achievements || [];
     const me = await meRes.json();
     const streak = me.streak || 0;
 
@@ -93,6 +94,12 @@ async function load() {
         `;
         cairnGrid.appendChild(card);
     });
+    } catch (err) {
+        ["crystal-grid","cairn-grid","themes-grid"].forEach(id => {
+            document.getElementById(id).innerHTML = `<p style="opacity:0.5">Couldn't load. Try refreshing.</p>`;
+        });
+        console.error(err);
+    }
 }
 
 const THEMES = [
@@ -115,6 +122,7 @@ const THEMES = [
 function renderThemes(earnedAchievements) {
     const current = localStorage.getItem("theme") || "system";
     const themesGrid = document.getElementById("themes-grid");
+    themesGrid.innerHTML = "";
 
     THEMES.forEach(theme => {
         const isUnlocked = theme.unlocked || earnedAchievements.has(theme.achievement);
