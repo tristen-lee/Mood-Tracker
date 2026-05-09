@@ -3,12 +3,12 @@ const token = localStorage.getItem("token");
 if (!token) window.location.href = "home.html";
 
 const CRYSTAL_SVGS = {
-    raw_stone:  "assets/achievements/raw_stone.svg",
-    amethyst:   "assets/achievements/amethyst.svg",
-    rose_quartz:"assets/achievements/crystal_heart.svg",
-    obsidian:   "assets/achievements/obsidian.svg",
-    red_jasper: "assets/achievements/red_jasper.svg",
-    century:    "assets/achievements/clear_quartz.svg",
+    raw_stone:  "assets/achievements/raw_stone.png",
+    amethyst:   "assets/achievements/amethyst.png",
+    rose_quartz:"assets/achievements/crystal_heart.png",
+    obsidian:   "assets/achievements/obsidian.png",
+    red_jasper: "assets/achievements/red_jasper.png",
+    century:    "assets/achievements/clear_quartz.png",
 };
 
 function achIcon(ach) {
