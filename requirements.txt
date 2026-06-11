@@ -12,3 +12,4 @@ anthropic>=0.50.0
 pywebpush>=2.0.0
 apscheduler>=3.10.0
 pytz>=2024.1
+resend>=2.0.0

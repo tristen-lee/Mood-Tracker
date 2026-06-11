@@ -7,7 +7,9 @@ from typing import Optional
 import os
 import json
 import random
+import secrets
 import anthropic
+import resend
 from db.database import get_connection
 from db.auth import hash_password, verify_password, create_token, decode_token
 from core.scoring import combined_score, mood_state, classify_state
@@ -20,6 +22,8 @@ anthropic_client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY
 VAPID_PRIVATE_KEY = os.environ.get("VAPID_PRIVATE_KEY", "")
 VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "")
 VAPID_CLAIMS = {"sub": "mailto:tristen.lee1221@gmail.com"}
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+APP_URL = os.environ.get("APP_URL", "https://tristen-lee.github.io/Mood-Tracker")
 
 MORNING_MESSAGES = [
     "A new day. How are you feeling?",
@@ -166,6 +170,13 @@ class MedicationBody(BaseModel):
 class JasperMessage(BaseModel):
     message: str
     history: Optional[list] = []
+
+class ForgotPasswordBody(BaseModel):
+    email: str
+
+class ResetPasswordBody(BaseModel):
+    token: str
+    new_password: str
 
 
 # --- Achievements ---
@@ -1168,3 +1179,70 @@ def get_achievements(authorization: Optional[str] = Header(None)):
         ],
         "newly_awarded": [{"id": ach_id, **ACHIEVEMENTS[ach_id]} for ach_id in newly_awarded],
     }
+
+
+# --- Password Reset ---
+
+@app.post("/forgot-password")
+def forgot_password(body: ForgotPasswordBody):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM users WHERE email = %s", (body.email,))
+    row = cur.fetchone()
+    if not row:
+        conn.close()
+        return {"message": "If that email is registered, you'll get a reset link shortly."}
+
+    user_id = row[0]
+    token = secrets.token_urlsafe(32)
+    expires_at = datetime.utcnow() + timedelta(hours=1)
+
+    cur.execute("""
+        INSERT INTO password_reset_tokens (user_id, token, expires_at)
+        VALUES (%s, %s, %s)
+        ON CONFLICT (user_id) DO UPDATE SET token = EXCLUDED.token, expires_at = EXCLUDED.expires_at
+    """, (user_id, token, expires_at))
+    conn.commit()
+    conn.close()
+
+    reset_url = f"{APP_URL}/reset-password.html?token={token}"
+
+    if RESEND_API_KEY:
+        try:
+            resend.api_key = RESEND_API_KEY
+            resend.Emails.send({
+                "from": "Cairn <no-reply@werecairn.com>",
+                "to": [body.email],
+                "subject": "Reset your Cairn password",
+                "html": f"""<p>Hey,</p>
+<p>We got a request to reset your Cairn password. Click the link below — it expires in 1 hour.</p>
+<p><a href="{reset_url}">{reset_url}</a></p>
+<p>If you didn't ask for this, just ignore this email.</p>
+<p>— The Cairn team</p>""",
+            })
+        except Exception:
+            pass
+
+    return {"message": "If that email is registered, you'll get a reset link shortly."}
+
+
+@app.post("/reset-password")
+def reset_password(body: ResetPasswordBody):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT user_id, expires_at FROM password_reset_tokens WHERE token = %s
+    """, (body.token,))
+    row = cur.fetchone()
+
+    if not row or row[1] < datetime.utcnow():
+        conn.close()
+        raise HTTPException(status_code=400, detail="Reset link is invalid or has expired.")
+
+    user_id = row[0]
+    hashed = hash_password(body.new_password)
+    cur.execute("UPDATE users SET password_hash = %s WHERE id = %s", (hashed, user_id))
+    cur.execute("DELETE FROM password_reset_tokens WHERE user_id = %s", (user_id,))
+    conn.commit()
+    conn.close()
+    return {"message": "Password updated. You can now log in."}
