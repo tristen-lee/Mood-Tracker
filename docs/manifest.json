@@ -2,6 +2,7 @@
     "name": "Cairn — Mental Health Tracker",
     "short_name": "Cairn",
     "description": "Daily mood, sleep, and symptom tracking for people with bipolar disorder and beyond.",
+    "id": "/home.html",
     "start_url": "/home.html",
     "scope": "/",
     "display": "standalone",
@@ -14,12 +15,6 @@
         {
             "src": "assets/cairn-logo-512px.png",
             "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "any"
-        },
-        {
-            "src": "assets/cairn-logo-512px.png",
-            "sizes": "192x192",
             "type": "image/png",
             "purpose": "any"
         },
