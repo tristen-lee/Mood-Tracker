@@ -34,25 +34,25 @@
     "screenshots": [
         {
             "src": "assets/home.PNG",
-            "type": "image/png",
+            "type": "image/jpeg",
             "form_factor": "narrow",
             "label": "Home screen"
         },
         {
             "src": "assets/dashboard.PNG",
-            "type": "image/png",
+            "type": "image/jpeg",
             "form_factor": "narrow",
             "label": "Dashboard"
         },
         {
             "src": "assets/analytics.PNG",
-            "type": "image/png",
+            "type": "image/jpeg",
             "form_factor": "narrow",
             "label": "Analytics"
         },
         {
             "src": "assets/jasper.PNG",
-            "type": "image/png",
+            "type": "image/jpeg",
             "form_factor": "narrow",
             "label": "Jasper AI companion"
         }
