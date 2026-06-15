@@ -2,7 +2,7 @@
 
 A mental health tracking app built specifically for bipolar disorder. I built this because I have bipolar and wanted a tool that actually reflected my experience — not a generic mood logger.
 
-Live at: [tristen-lee.github.io/Mood-Tracker](https://tristen-lee.github.io/Mood-Tracker)
+Live at: https://werecairn.com/home.html
 
 ---
 
