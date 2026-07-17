@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.werecairn.app",
+        "sha256_cert_fingerprints": ["D9:EA:16:64:D5:FC:05:6B:99:A6:01:E9:75:8C:4B:F2:88:E5:E1:10:C3:2C:44:70:82:C9:69:58:84:83:5C:AC"]
+      }
+    }]
